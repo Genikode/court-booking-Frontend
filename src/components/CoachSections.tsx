@@ -1,16 +1,16 @@
 'use client';
 
 const CoachSections = () => {
-  const skills = [
-    { name: 'Leaps', value: 45 },
-    { name: 'Turns', value: 69 },
-    { name: 'Positioning', value: 88 },
-    { name: 'Single and Double turns', value: 46 },
-    { name: 'Toe touch', value: 69 },
-    { name: 'Spirals', value: 37 },
-    { name: 'Body halves', value: 89 },
-    { name: 'Retire', value: 44 },
-    { name: 'Jazz walks', value: 38 },
+  const features = [
+    { name: 'Court Surface Quality', value: 95 },
+    { name: 'Lighting', value: 90 },
+    { name: 'Cleanliness', value: 92 },
+    { name: 'Seating Comfort', value: 85 },
+    { name: 'Accessibility', value: 88 },
+    { name: 'Equipment Availability', value: 80 },
+    { name: 'Safety Measures', value: 93 },
+    { name: 'Booking Convenience', value: 87 },
+    { name: 'Parking Facility', value: 89 },
   ];
 
   return (
@@ -18,52 +18,46 @@ const CoachSections = () => {
       <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-start">
         {/* Left Side: About Text */}
         <div>
-          <h3 className="text-2xl font-bold mb-4">About</h3>
+          <h3 className="text-2xl font-bold mb-4">About Our Tennis Courts</h3>
           <p className="mb-4">
-            Martha’s life has taken a lot of amazing u-turns over the last 40 years...
+            Creek Sports Club offers premium tennis courts designed for players of all levels. Our courts feature high-quality surfaces, excellent lighting, and a clean, safe environment for your best game.
           </p>
           <p className="mb-4">
-            At the age of 15, immediately after moving from Cuba to the US in 1976, Martha
-            has begun to seek what her professional career may be...
+            Whether you’re practicing solo, playing doubles, or joining a tournament, our facilities provide everything you need for a great tennis experience.
           </p>
           <p className="mb-4">
-            Eventually, after working at numerous nightclubs in Florida, Nevada and LA, she
-            felt that dancing was the right move for her... Considering the high culture of
-            Latin dances present in Cuba at all times, dancing felt very much natural to her…
+            We focus on convenience and comfort, with easy booking, accessible locations, and plenty of parking for all visitors.
           </p>
           <p className="mb-4">
-            So after saving a principal capital for 9 years, in 1985 Stephania finally founded
-            her very own dancing studio in Indiana!
+            Our courts are regularly maintained to ensure top performance and safety, so you can focus on your game.
           </p>
           <p className="mb-4">
-            Fast forward 30 years later and her studio has grown to be one of the most popular
-            ones in the state, with a diverse and universal range of both vivid dancing styles
-            and a team of bold dancing instructors!
+            Join us and enjoy the best tennis courts in the area, perfect for training, matches, and social play.
           </p>
 
           <h4 className="text-xl font-bold mt-8 mb-2">
-            This dance instructor works with the following styles:
+            Our tennis courts are ideal for:
           </h4>
           <ul className="list-disc pl-5 text-[#fd2e69] space-y-1">
-            <li>Salsa</li>
-            <li>Rumba</li>
-            <li>Quickstep</li>
-            <li>Jive</li>
+            <li>Singles Matches</li>
+            <li>Doubles Matches</li>
+            <li>Practice Sessions</li>
+            <li>Group Lessons</li>
           </ul>
         </div>
 
-        {/* Right Side: Skills Progress */}
+        {/* Right Side: Court Features Progress */}
         <div className="space-y-6">
-          {skills.map((skill, index) => (
+          {features.map((feature, index) => (
             <div key={index}>
               <div className="flex justify-between mb-1 font-semibold text-sm">
-                <span>{skill.name}</span>
-                <span>{skill.value}%</span>
+                <span>{feature.name}</span>
+                <span>{feature.value}%</span>
               </div>
               <div className="w-full h-2 bg-gray-100 rounded-full">
                 <div
                   className="h-full bg-[#fd2e69] rounded-full"
-                  style={{ width: `${skill.value}%` }}
+                  style={{ width: `${feature.value}%` }}
                 ></div>
               </div>
             </div>

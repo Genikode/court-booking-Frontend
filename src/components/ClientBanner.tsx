@@ -10,7 +10,7 @@ const ClientBanner = () => {
         {/* Profile Image */}
         <div className="w-48 h-48 relative rounded-full overflow-hidden shadow-lg">
           <Image
-            src="/coach-1.jpg" // ⬅️ Replace with actual image path
+            src="/banner1.jpg" // ⬅️ Replace with actual image path
             alt="Martha Summers"
             fill
             className="object-cover"
@@ -21,8 +21,8 @@ const ClientBanner = () => {
         {/* Details */}
         <div>
           <div className="w-10 h-1 bg-white mb-3"></div>
-          <h2 className="text-5xl font-extrabold mb-2">Martha Summers</h2>
-          <p className="text-lg mb-4">Instructor</p>
+          <h2 className="text-5xl font-extrabold mb-2">Gulshan Court</h2>
+          <p className="text-lg mb-4">Coach: Martha Summers</p>
 
           <div className="flex gap-4">
             <a
