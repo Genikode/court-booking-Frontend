@@ -57,6 +57,7 @@ export default function Header() {
           <img src="/logo.png" alt="Nrityangan Logo" className="h-8 md:hidden" />
           
           <ul className="hidden md:flex gap-6 font-semibold uppercase text-black relative">
+              <li><Link href="/">Home</Link></li>
             <li><Link href="/about">About</Link></li>
             <li
               className="relative"
@@ -88,16 +89,17 @@ export default function Header() {
       {menuOpen && (
         <div className="md:hidden bg-white px-6 py-4 shadow-lg absolute top-full left-0 w-full z-40">
           <ul className="flex flex-col gap-4 text-black font-semibold uppercase">
+              <li><Link href="/">Home</Link></li>
             <li><Link href="/about">About</Link></li>
             <li>
               <details className="cursor-pointer">
-                <summary>Coaches</summary>
+                <summary>Court</summary>
                 <ul className="pl-4 mt-2 space-y-2 text-sm">
-                  <li><Link href="/james">Martha</Link></li>
+               <li><Link href="/james" className="block py-2 hover:text-pink-500">Gulshan Court</Link></li>
                 </ul>
               </details>
             </li>
-            <li><Link href="/clients">Clients</Link></li>
+         <li><Link href="/booknow">Book Now</Link></li>
             <li><Link href="/contact">Contacts</Link></li>
           </ul>
 
