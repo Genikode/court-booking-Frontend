@@ -14,8 +14,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Nrityangan Dance Academy",
-  description: "Dance is Life",
+  title: "Creek Sports Club",
+  keywords: ["Creek Sports Club", "Sports", "Club", "Community"],
+  authors: [{ name: "Ghayas Ali", url: "https://github.com/GhayasAli" }],
+  description: "Creek Sports Club is a vibrant community hub for sports enthusiasts, offering a range of activities and facilities to promote health and wellness.",
 };
 
 export default function RootLayout({
