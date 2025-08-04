@@ -8,9 +8,11 @@ const steps = [
   'Payments',
 ];
 
-export default function BookNowSection() {
+export default function 
+BookNowSection() {
   const [currentStep, setCurrentStep] = useState(0);
 
+    const [selectedDate, setSelectedDate] = useState<number | null>(null);
   return (
     <section className="min-h-screen bg-gray-100 flex">
       {/* Sidebar */}
@@ -79,10 +81,18 @@ export default function BookNowSection() {
             </div>
             <div className="grid grid-cols-7 gap-2">
               {[...Array(31)].map((_, i) => (
-                <button key={i} className="p-2 rounded bg-white border hover:bg-blue-100">
+                <button
+                  key={i}
+                  className={`p-2 rounded border bg-white hover:bg-blue-100 ${
+                    selectedDate === i + 1 ? 'bg-blue-600 text-black font-bold' : ''
+                  }`}
+                  onClick={() => setSelectedDate(i + 1)}
+                >
                   {i + 1}
                 </button>
               ))}
+
+
             </div>
           </div>
         )}
