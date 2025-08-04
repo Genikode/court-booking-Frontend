@@ -19,7 +19,7 @@ export default function Header() {
       {/* Top Bar */}
       <div className="hidden md:flex justify-between items-center px-6 py-4 border-b" >
         <Link href="/">
-        <img src="/logo1.png" alt="Nrityangan Logo" className="h-10" />
+        <img src="/logo1.png" alt="Nrityangan Logo" className="h-50" />
         </Link>
 
         <div className="flex gap-8 text-gray-600">
