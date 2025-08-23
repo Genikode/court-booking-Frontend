@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   description: "Creek Sports Club is a vibrant community hub for sports enthusiasts, offering a range of activities and facilities to promote health and wellness.",
 };
 
-export default function RootLayout({
+export default function DashboardLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -30,9 +30,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Header />
+    
         {children}
-        <Footer />
+   
       </body>
     </html>
   );

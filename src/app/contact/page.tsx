@@ -1,13 +1,18 @@
 'use client';
 
+import Header from "@/components/Header";
+import Footer from "@/sections/Footer";
+
 const ContactPage = () => {
   return (
+    <>
+  <Header />
     <section className="w-full bg-white text-center">
       <div className="max-w-4xl mx-auto px-4 py-20">
         {/* Header */}
         <div className="mb-10">
           <div className="w-12 h-1 bg-pink-500 mx-auto mb-4"></div>
-          <h2 className="text-4xl font-extrabold">Contacts</h2>
+          <h2 className="text-4xl font-extrabold">Contact</h2>
           <p className="text-sm mt-2 text-gray-500">Join the Best Dance School in Your Town!</p>
         </div>
 
@@ -86,6 +91,8 @@ const ContactPage = () => {
         ></iframe>
       </div>
     </section>
+    <Footer />
+      </>
   );
 };
 

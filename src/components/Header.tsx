@@ -72,7 +72,7 @@ export default function Header() {
               )}
             </li>
             <li><Link href="/booknow">Book Now</Link></li>
-            <li><Link href="/contact">Contacts</Link></li>
+            <li><Link href="/contact">Contact</Link></li>
           </ul>
         </div>
 
@@ -100,7 +100,7 @@ export default function Header() {
               </details>
             </li>
          <li><Link href="/booknow">Book Now</Link></li>
-            <li><Link href="/contact">Contacts</Link></li>
+            <li><Link href="/contact">Contact</Link></li>
           </ul>
 
           {/* Contact Info */}
