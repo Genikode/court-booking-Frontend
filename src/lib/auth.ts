@@ -94,11 +94,12 @@ export async function login(body: LoginBody) {
     res.accessToken;
 
   if (!token) throw new Error("Token missing in login response.");
+  if (!res.data?.userData) throw new Error("User data missing in login response.");
 
   setToken(token);
-  if (res.data?.user) setUser(res.data.user);
+  if (res.data?.userData) setUser(res.data.userData);
 
-  return { token, user: res.data?.user, raw: res };
+  return { token, user: res.data?.userData, raw: res };
 }
 
 export function logout() {
