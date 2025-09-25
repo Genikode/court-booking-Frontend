@@ -7,8 +7,8 @@ import { Eye, EyeOff } from "lucide-react";
 
 export default function LoginScreen() {
   const router = useRouter();
-  const [email, setEmail] = useState("jimmy12@gmail.com");
-  const [password, setPassword] = useState("admin12345");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
@@ -90,7 +90,7 @@ export default function LoginScreen() {
                 <input
                   type={showPassword ? "text" : "password"}
                   placeholder="Enter your password"
-                  className="w-full border border-gray-300 px-4 py-2 rounded-md pr-10 focus:outline-none focus:ring focus:ring-blue-500"
+                  className="w-full border text-black placeholder:text-black border-gray-300 px-4 py-2 rounded-md pr-10 focus:outline-none focus:ring focus:ring-blue-500"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   autoComplete="current-password"
