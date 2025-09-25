@@ -19,18 +19,16 @@ export default function LoginScreen() {
 
     try {
       setLoading(true);
-      const res = await login({ email, password }); // <- comes from lib/auth.ts
+      const res = await login({ email, password });
       if (!res.raw) {
-        throw new Error( "Login failed");
-
-      }else {
-       if(res.user?.roleId === 1){
-        router.push("/dashboard");
-        }else{
-          router.push('/booking');
+        throw new Error("Login failed");
+      } else {
+        if (res.user?.roleId === 1) {
+          router.push("/dashboard");
+        } else {
+          router.push("/booking");
         }
       }
-     
     } catch (e: any) {
       setErr(e?.message || "Login failed");
     } finally {
@@ -39,7 +37,7 @@ export default function LoginScreen() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white px-4">
+    <div className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-900 px-4 transition-colors duration-300">
       <div className="flex flex-col md:flex-row items-center gap-10 w-full max-w-5xl">
         {/* Logo */}
         <div className="w-full md:w-1/2 flex justify-center">
@@ -54,12 +52,12 @@ export default function LoginScreen() {
 
         {/* Login Form */}
         <div className="w-full md:w-1/2">
-          <h2 className="text-3xl font-bold text-gray-800 mb-6">
+          <h2 className="text-3xl font-bold text-gray-800 dark:text-white mb-6">
             Sign In to Creek Sports Club
           </h2>
 
           {err && (
-            <div className="mb-4 rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-700">
+            <div className="mb-4 rounded-md border border-red-300 bg-red-50 dark:bg-red-900/30 dark:border-red-700 p-3 text-sm text-red-700 dark:text-red-400">
               {err}
             </div>
           )}
@@ -67,13 +65,13 @@ export default function LoginScreen() {
           <form className="space-y-6" onSubmit={handleLogin}>
             {/* Email */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 <span className="text-red-500">*</span> Email:
               </label>
               <input
                 type="email"
                 placeholder="Enter your email"
-                className="w-full border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring focus:ring-blue-500"
+                className="w-full border border-gray-300 dark:border-gray-600 px-4 py-2 rounded-md bg-white dark:bg-gray-800 text-black dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring focus:ring-blue-500"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 autoComplete="email"
@@ -83,14 +81,14 @@ export default function LoginScreen() {
 
             {/* Password */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 <span className="text-red-500">*</span> Password:
               </label>
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
                   placeholder="Enter your password"
-                  className="w-full border text-black placeholder:text-black border-gray-300 px-4 py-2 rounded-md pr-10 focus:outline-none focus:ring focus:ring-blue-500"
+                  className="w-full border border-gray-300 dark:border-gray-600 px-4 py-2 rounded-md bg-white dark:bg-gray-800 text-black dark:text-white placeholder:text-gray-400 pr-10 focus:outline-none focus:ring focus:ring-blue-500"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   autoComplete="current-password"
@@ -99,7 +97,7 @@ export default function LoginScreen() {
                 <button
                   type="button"
                   onClick={() => setShowPassword((s) => !s)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
@@ -110,12 +108,12 @@ export default function LoginScreen() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 disabled:opacity-60"
+              className="w-full bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 disabled:opacity-60 transition"
             >
               {loading ? "Signing in..." : "Login"}
             </button>
-            <div className="mt-4 text-sm text-gray-600">
-              Don't have an account?{" "}
+            <div className="mt-4 text-sm text-gray-600 dark:text-gray-400">
+              Don&apos;t have an account?{" "}
               <a href="/signup" className="text-blue-600 hover:underline">
                 Sign Up
               </a>

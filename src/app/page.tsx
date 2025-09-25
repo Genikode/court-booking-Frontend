@@ -13,7 +13,7 @@ import Footer from "@/sections/Footer";
 
 export default function Home() {
   return (
-    <div>
+    <div className="bg-white">
           <Header />
       <BannerSlider />
       <IntroSection />

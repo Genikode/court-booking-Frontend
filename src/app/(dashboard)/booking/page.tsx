@@ -185,234 +185,227 @@ export default function MyBookingsPage() {
   };
 
   return (
-    <div className="p-4 sm:p-6 max-w-4xl mx-auto text-[14px]">
-      {/* Header */}
-      <div className="mb-4">
-        <h1 className="text-2xl font-semibold">My Bookings</h1>
-        <p className="text-gray-600 text-[13px]">View and manage your court bookings.</p>
-      </div>
+<div className="p-4 sm:p-6 max-w-4xl mx-auto text-[14px] text-black">
+  {/* Header */}
+  <div className="mb-4">
+    <h1 className="text-2xl font-semibold">My Bookings</h1>
+    <p className="text-[13px]">View and manage your court bookings.</p>
+  </div>
 
-      {/* Phone + Search */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
-        <div className="flex items-center gap-2 w-full sm:w-[320px]">
-          <input
-            type="tel"
-            placeholder="Your phone (e.g., +923001234567)"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            className="w-full px-3 py-2 border rounded-lg"
-          />
-          <button
-            onClick={() => fetchBookings()}
-            className="px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
-          >
-            Load
-          </button>
-        </div>
-
-        <div className="w-full sm:w-72 relative">
-          <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search bookings..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 border rounded-lg"
-          />
-        </div>
-      </div>
-
-      {/* Error */}
-      {err && (
-        <div className="mb-4 flex items-start gap-2 rounded-lg bg-red-50 text-red-700 px-3 py-2">
-          <AlertCircle className="w-4 h-4 mt-[2px]" />
-          <span className="text-sm">{err}</span>
-        </div>
-      )}
-
-      {/* List */}
-      <div className="grid grid-cols-1 gap-4">
-        {loading ? (
-          Array.from({ length: 4 }).map((_, i) => (
-            <div
-              key={i}
-              className="h-28 bg-white rounded-2xl border border-slate-200 ring-1 ring-slate-100 shadow-sm animate-pulse"
-            />
-          ))
-        ) : filtered.length === 0 ? (
-          <div className="text-center text-gray-500 py-10">No bookings found.</div>
-        ) : (
-          filtered.map((b) => {
-            const isBooked = b.status?.toLowerCase() === "booked";
-            const canUpload = isBooked && b.isPaid === 0;
-
-            return (
-              <div
-                key={b.bookingId}
-                className="bg-white rounded-2xl border border-slate-200 ring-1 ring-slate-100 shadow-sm p-3"
-              >
-                {/* Top row: title + pills */}
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <div className="min-w-0">
-                    <div className="font-semibold text-[15px] text-slate-900 truncate">
-                      {b.courtName}
-                    </div>
-                    <div className="text-[12px] text-slate-600">{b.courtType}</div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {/* Paid / Unpaid */}
-                    {b.isPaid ? (
-                      <Pill color="green">Paid</Pill>
-                    ) : (
-                      <Pill color="yellow">Unpaid</Pill>
-                    )}
-                    {/* Status */}
-                    {isBooked ? (
-                      <Pill color="blue">Booked</Pill>
-                    ) : (
-                      <Pill color="gray" className="capitalize">
-                        {b.status}
-                      </Pill>
-                    )}
-                  </div>
-                </div>
-
-                {/* Details row */}
-                <div className="mt-2 grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-4 text-slate-700">
-                  <div className="flex items-center gap-1">
-                    <CalendarDays className="w-4 h-4 text-slate-500" />
-                    <span className="text-[13px]">{formatDate(b.bookingDate)}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Clock className="w-4 h-4 text-slate-500" />
-                    <span className="text-[13px]">
-                      {formatTime12Hour(b.startTime)} – {formatTime12Hour(b.endTime)}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Proof row */}
-                <div className="mt-3 flex flex-wrap items-center gap-2">
-                  {b.paymentProofUrl ? (
-                    <button
-                      onClick={() => setPreviewUrl(b.paymentProofUrl!)}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border hover:bg-gray-50"
-                    >
-                      <ImageIcon className="w-4 h-4" />
-                      View Payment Proof
-                    </button>
-                  ) : (
-                    <Pill color="gray">No proof uploaded</Pill>
-                  )}
-
-                  {/* Upload new proof (allowed only if unpaid & booked) */}
-                  <label
-                    className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border cursor-pointer ${
-                      canUpload ? "hover:bg-gray-50" : "opacity-50 cursor-not-allowed"
-                    }`}
-                    title={canUpload ? "Upload payment proof" : "Uploading disabled"}
-                  >
-                    <Upload className="w-4 h-4" />
-                    <span>Upload Proof</span>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      disabled={!canUpload}
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) onFilePick(b.bookingId, file);
-                        // reset input so same file can be chosen again later
-                        if (e.currentTarget) e.currentTarget.value = "";
-                      }}
-                    />
-                  </label>
-
-                  {/* Pending (local) selected proof & Submit */}
-                  {pendingProof[b.bookingId]?.url && (
-                    <>
-                      <button
-                        onClick={() => setPreviewUrl(pendingProof[b.bookingId].url)}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border hover:bg-gray-50"
-                      >
-                        <ImageIcon className="w-4 h-4" />
-                        Preview upload
-                      </button>
-                      <button
-                        disabled={submittingFor === b.bookingId}
-                        onClick={() => submitPaymentProof(b.bookingId)}
-                        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-60"
-                      >
-                        {submittingFor === b.bookingId ? (
-                          <>
-                            <svg
-                              className="animate-spin h-4 w-4"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <circle
-                                className="opacity-25"
-                                cx="12"
-                                cy="12"
-                                r="10"
-                                stroke="currentColor"
-                                strokeWidth="4"
-                              />
-                              <path
-                                className="opacity-75"
-                                fill="currentColor"
-                                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                              />
-                            </svg>
-                            Submitting…
-                          </>
-                        ) : (
-                          <>
-                            <CheckCircle2 className="w-4 h-4" />
-                            Submit Proof
-                          </>
-                        )}
-                      </button>
-                    </>
-                  )}
-
-                  {/* Uploading spinner */}
-                  {uploadingFor === b.bookingId && (
-                    <span className="text-[13px] text-gray-600">Uploading…</span>
-                  )}
-                </div>
-              </div>
-            );
-          })
-        )}
-      </div>
-
-      {/* Image preview modal */}
-      {previewUrl && (
-        <div
-          className="fixed inset-0 bg-black/60 backdrop-blur-[1px] flex items-center justify-center z-50"
-          onClick={() => setPreviewUrl(null)}
-        >
-          <div
-            className="relative max-w-3xl w-auto max-h-[85vh] p-2"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={() => setPreviewUrl(null)}
-              className="absolute -top-10 right-0 text-white hover:opacity-80"
-              title="Close"
-            >
-              <X className="w-6 h-6" />
-            </button>
-            <img
-              src={previewUrl}
-              alt="Payment Proof"
-              className="rounded-lg shadow-2xl max-h-[85vh] w-auto object-contain"
-            />
-          </div>
-        </div>
-      )}
+  {/* Phone + Search */}
+  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
+    <div className="flex items-center gap-2 w-full sm:w-[320px]">
+      <input
+        type="tel"
+        placeholder="Your phone (e.g., +923001234567)"
+        value={phone}
+        onChange={(e) => setPhone(e.target.value)}
+        className="w-full px-3 py-2 border rounded-lg text-black"
+      />
+      <button
+        onClick={() => fetchBookings()}
+        className="px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+      >
+        Load
+      </button>
     </div>
+
+    <div className="w-full sm:w-72 relative">
+      <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-black/50" />
+      <input
+        type="text"
+        placeholder="Search bookings..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        className="w-full pl-9 pr-3 py-2 border rounded-lg text-black"
+      />
+    </div>
+  </div>
+
+  {/* Error */}
+  {err && (
+    <div className="mb-4 flex items-start gap-2 rounded-lg bg-red-50 text-red-700 px-3 py-2">
+      <AlertCircle className="w-4 h-4 mt-[2px]" />
+      <span className="text-sm">{err}</span>
+    </div>
+  )}
+
+  {/* List */}
+  <div className="grid grid-cols-1 gap-4">
+    {loading ? (
+      Array.from({ length: 4 }).map((_, i) => (
+        <div
+          key={i}
+          className="h-28 bg-white rounded-2xl border border-slate-200 ring-1 ring-slate-100 shadow-sm animate-pulse"
+        />
+      ))
+    ) : filtered.length === 0 ? (
+      <div className="text-center py-10">No bookings found.</div>
+    ) : (
+      filtered.map((b) => {
+        const isBooked = b.status?.toLowerCase() === "booked";
+        const canUpload = isBooked && b.isPaid === 0;
+
+        return (
+          <div
+            key={b.bookingId}
+            className="bg-white rounded-2xl border border-slate-200 ring-1 ring-slate-100 shadow-sm p-3 text-black"
+          >
+            {/* Top row */}
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="min-w-0">
+                <div className="font-semibold text-[15px] truncate">
+                  {b.courtName}
+                </div>
+                <div className="text-[12px]">{b.courtType}</div>
+              </div>
+              <div className="flex items-center gap-2">
+                {b.isPaid ? (
+                  <Pill color="green">Paid</Pill>
+                ) : (
+                  <Pill color="yellow">Unpaid</Pill>
+                )}
+                {isBooked ? (
+                  <Pill color="blue">Booked</Pill>
+                ) : (
+                  <Pill color="gray" className="capitalize">
+                    {b.status}
+                  </Pill>
+                )}
+              </div>
+            </div>
+
+            {/* Details */}
+            <div className="mt-2 grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-4">
+              <div className="flex items-center gap-1">
+                <CalendarDays className="w-4 h-4 text-black/60" />
+                <span className="text-[13px]">{formatDate(b.bookingDate)}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <Clock className="w-4 h-4 text-black/60" />
+                <span className="text-[13px]">
+                  {formatTime12Hour(b.startTime)} – {formatTime12Hour(b.endTime)}
+                </span>
+              </div>
+            </div>
+
+            {/* Proof row */}
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              {b.paymentProofUrl ? (
+                <button
+                  onClick={() => setPreviewUrl(b.paymentProofUrl!)}
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border hover:bg-gray-50"
+                >
+                  <ImageIcon className="w-4 h-4" />
+                  View Payment Proof
+                </button>
+              ) : (
+                <Pill color="gray">No proof uploaded</Pill>
+              )}
+
+              <label
+                className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border cursor-pointer ${
+                  canUpload ? "hover:bg-gray-50" : "opacity-50 cursor-not-allowed"
+                }`}
+              >
+                <Upload className="w-4 h-4" />
+                <span>Upload Proof</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  disabled={!canUpload}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) onFilePick(b.bookingId, file);
+                    if (e.currentTarget) e.currentTarget.value = "";
+                  }}
+                />
+              </label>
+
+              {pendingProof[b.bookingId]?.url && (
+                <>
+                  <button
+                    onClick={() => setPreviewUrl(pendingProof[b.bookingId].url)}
+                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border hover:bg-gray-50"
+                  >
+                    <ImageIcon className="w-4 h-4" />
+                    Preview upload
+                  </button>
+                  <button
+                    disabled={submittingFor === b.bookingId}
+                    onClick={() => submitPaymentProof(b.bookingId)}
+                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-60"
+                  >
+                    {submittingFor === b.bookingId ? (
+                      <>
+                        <svg
+                          className="animate-spin h-4 w-4"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          />
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                          />
+                        </svg>
+                        Submitting…
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle2 className="w-4 h-4" />
+                        Submit Proof
+                      </>
+                    )}
+                  </button>
+                </>
+              )}
+
+              {uploadingFor === b.bookingId && (
+                <span className="text-[13px]">Uploading…</span>
+              )}
+            </div>
+          </div>
+        );
+      })
+    )}
+  </div>
+
+  {/* Image preview modal */}
+  {previewUrl && (
+    <div
+      className="fixed inset-0 bg-black/60 backdrop-blur-[1px] flex items-center justify-center z-50"
+      onClick={() => setPreviewUrl(null)}
+    >
+      <div
+        className="relative max-w-3xl w-auto max-h-[85vh] p-2"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          onClick={() => setPreviewUrl(null)}
+          className="absolute -top-10 right-0 text-white hover:opacity-80"
+        >
+          <X className="w-6 h-6" />
+        </button>
+        <img
+          src={previewUrl}
+          alt="Payment Proof"
+          className="rounded-lg shadow-2xl max-h-[85vh] w-auto object-contain"
+        />
+      </div>
+    </div>
+  )}
+</div>
+
   );
 }

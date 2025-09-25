@@ -21,7 +21,7 @@ export default function Dashboard() {
             <p className="text-2xl font-bold text-blue-800 mt-2">500+</p>
           </div>
           <div className="bg-white p-6 rounded shadow">
-            <h2 className="text-lg font-semibold text-gray-700">Today’s Bookings</h2>
+            <h2 className="text-lg font-semibold text-gray-700">Bookings</h2>
             <p className="text-2xl font-bold text-blue-800 mt-2">36</p>
           </div>
           <div className="bg-white p-6 rounded shadow">
@@ -30,33 +30,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="mt-10">
-          <h2 className="text-xl font-semibold mb-4 text-gray-800">Recent Bookings</h2>
-          <table className="w-full bg-white rounded shadow overflow-hidden">
-            <thead className="bg-blue-800 text-white">
-              <tr>
-                <th className="py-3 px-4 text-left">Member</th>
-                <th className="py-3 px-4 text-left">Court</th>
-                <th className="py-3 px-4 text-left">Time</th>
-                <th className="py-3 px-4 text-left">Amount</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="border-b hover:bg-gray-100">
-                <td className="py-3 px-4">Ghayas Ali</td>
-                <td className="py-3 px-4">Single Court 1</td>
-                <td className="py-3 px-4">6:30 AM - 7:30 AM</td>
-                <td className="py-3 px-4">PKR 1,500</td>
-              </tr>
-              <tr className="border-b hover:bg-gray-100">
-                <td className="py-3 px-4">Ayesha Khan</td>
-                <td className="py-3 px-4">Double Court</td>
-                <td className="py-3 px-4">9:00 AM - 10:00 AM</td>
-                <td className="py-3 px-4">PKR 2,000</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+    
       </div>
     </div>
   );

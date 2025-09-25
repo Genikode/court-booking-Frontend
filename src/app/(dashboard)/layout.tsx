@@ -9,8 +9,11 @@ import {
   LogOut,
   LayoutDashboard,
   BookOpen,
+  ShoppingBag,
+  ShoppingBasket,
 } from 'lucide-react';
 import { clearToken, clearUser, getUser, isAuthenticated } from '@/lib/auth';
+import { BiTennisBall } from 'react-icons/bi';
 
 export default function DashboardLayout({
   children,
@@ -28,12 +31,12 @@ export default function DashboardLayout({
   const adminnavItems = [
     { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { label: 'Courts', href: '/court', icon: BookOpen },
-    { label: 'Bookings', href: '/bookings', icon: BookOpen },
+    { label: 'Bookings', href: '/bookings', icon: ShoppingBag },
   ];
 
   const cusnavItems = [
-    { label: 'My Bookings', href: '/booking', icon: BookOpen },
-    { label: 'Available Courts', href: '/courts', icon: BookOpen },
+    { label: 'My Bookings', href: '/booking', icon: ShoppingBasket },
+    { label: 'Available Courts', href: '/courts', icon: BiTennisBall },
   ];
 
   const isCust = currentUser?.roleId === 2 ;

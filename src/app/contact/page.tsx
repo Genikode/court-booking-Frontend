@@ -7,15 +7,13 @@ const ContactPage = () => {
   return (
     <>
       <Header />
-      <section className="w-full bg-white text-center">
+      <section className="w-full bg-white text-center text-black">
         <div className="max-w-4xl mx-auto px-4 py-20">
           {/* Header */}
           <div className="mb-10">
             <div className="w-12 h-1 bg-pink-500 mx-auto mb-4"></div>
             <h2 className="text-4xl font-extrabold">Contact</h2>
-            <p className="text-sm mt-2 text-gray-500">
-              Join the Best Dance School in Your Town!
-            </p>
+            <p className="text-sm mt-2">Join the Best Dance School in Your Town!</p>
           </div>
 
           {/* Address & Phone */}
@@ -26,13 +24,13 @@ const ContactPage = () => {
               Rawalpindi
             </span>{" "}
             Let’s talk:{" "}
-            <span className="text-pink-600">(703) 329–06–32</span>
+            <span className="font-bold">(703) 329–06–32</span>
           </div>
 
           {/* Operating Hours */}
           <div className="text-left mt-4 mb-8 max-w-md mx-auto text-sm font-semibold">
             Operating Hours:
-            <ul className="mt-2 text-gray-600 font-normal">
+            <ul className="mt-2">
               <li>
                 <strong>Daily:</strong> 🕘 9:00 AM – 2:00 AM
               </li>
@@ -40,7 +38,7 @@ const ContactPage = () => {
 
             <div className="mt-4">
               Peak Hours:
-              <ul className="list-disc ml-6 mt-2 text-gray-600 font-normal">
+              <ul className="list-disc ml-6 mt-2">
                 <li>Weekends (All Day)</li>
                 <li>Rate: PKR 7,500 / Hour</li>
               </ul>
@@ -48,7 +46,7 @@ const ContactPage = () => {
 
             <div className="mt-4">
               Off-Peak Hours:
-              <ul className="list-disc ml-6 mt-2 text-gray-600 font-normal">
+              <ul className="list-disc ml-6 mt-2">
                 <li>Weekdays (9:00 AM – 3:00 PM)</li>
                 <li>Rate: PKR 5,000 / Hour</li>
               </ul>
@@ -62,7 +60,7 @@ const ContactPage = () => {
               <input
                 type="text"
                 placeholder="Enter please your name"
-                className="col-span-3 p-2 border-b border-gray-300 focus:outline-none focus:border-pink-500"
+                className="col-span-3 p-2 border-b border-gray-300 focus:outline-none focus:border-pink-500 text-black"
               />
             </div>
 
@@ -71,7 +69,7 @@ const ContactPage = () => {
               <input
                 type="email"
                 placeholder="Enter please your e-mail"
-                className="col-span-3 p-2 border-b border-gray-300 focus:outline-none focus:border-pink-500"
+                className="col-span-3 p-2 border-b border-gray-300 focus:outline-none focus:border-pink-500 text-black"
               />
             </div>
 
@@ -80,7 +78,7 @@ const ContactPage = () => {
               <input
                 type="text"
                 placeholder="Enter please your phone"
-                className="col-span-3 p-2 border-b border-gray-300 focus:outline-none focus:border-pink-500"
+                className="col-span-3 p-2 border-b border-gray-300 focus:outline-none focus:border-pink-500 text-black"
               />
             </div>
 
@@ -88,7 +86,7 @@ const ContactPage = () => {
               <label className="col-span-1 font-bold">Message:</label>
               <textarea
                 placeholder="Enter please your message"
-                className="col-span-3 p-2 border border-gray-300 rounded resize-none h-24 focus:outline-none focus:border-pink-500"
+                className="col-span-3 p-2 border border-gray-300 rounded resize-none h-24 focus:outline-none focus:border-pink-500 text-black"
               ></textarea>
             </div>
 
