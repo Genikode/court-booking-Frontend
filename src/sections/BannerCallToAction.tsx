@@ -7,7 +7,7 @@ export default function BannerCallToAction() {
     <section className="relative h-[500px] w-full">
       {/* Background Image */}
       <Image
-        src="/banner3.jpg"
+        src="/image4.jpeg"
         alt="Tennis Court"
         fill
         priority
@@ -26,12 +26,7 @@ export default function BannerCallToAction() {
           <h2 className="text-white text-3xl md:text-5xl font-extrabold leading-tight mb-6">
             Discover the perfect tennis court<br className="hidden md:block" /> for your game!
           </h2>
-          <Link
-            href="#courts"
-            className="inline-block bg-pink-600 hover:bg-pink-700 text-white font-semibold px-6 py-3 rounded-full text-sm transition duration-300"
-          >
-            VIEW THE COURTS
-          </Link>
+        
         </div>
       </div>
     </section>

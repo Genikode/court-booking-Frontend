@@ -20,7 +20,7 @@ export default function IntroSection() {
   
           {/* Image */}
           <div className="w-full">
-            <img src="/ink.jpg" alt="Tennis Court" className="w-full h-auto object-contain" />
+            <img src="/image1.jpeg" alt="Tennis Court" className="w-full h-auto object-contain" />
           </div>
         </div>
       </section>

@@ -15,8 +15,8 @@ export default function About() {
       <Header />
        <PageBanner
         title="About"
-        subtitle="Welcome to the Nrityangan Dance Academy"
-        backgroundImage="/about.webp"
+        subtitle="Learn More About Us"
+        backgroundImage="/image4.jpeg"
       />
       <AboutSection />
       <TwoImageBanner />

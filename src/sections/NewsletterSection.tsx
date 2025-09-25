@@ -13,7 +13,7 @@ export default function NewsletterSection() {
   };
 
   return (
-    <section className="bg-pink-600 text-white py-20 px-4">
+    <section className="bg-green-600 text-white py-20 px-4">
       <div className="max-w-3xl mx-auto text-center">
         {/* Heading */}
         <h2 className="text-3xl md:text-5xl font-extrabold leading-tight mb-10">

@@ -36,7 +36,7 @@ export default function PadelIntroSection() {
       <div className="grid md:grid-cols-2 gap-8 items-center  bg-opacity-50 p-6 rounded-lg">
         <div>
           <Image
-            src="/banner1.jpg"
+            src="/image6.jpeg"
             alt="Padel rackets"
             width={600}
             height={400}
@@ -49,7 +49,7 @@ export default function PadelIntroSection() {
               <button
                 onClick={() => setOpenIndex(index === openIndex ? null : index)}
                 className={`w-full text-left py-3 px-4 font-semibold flex justify-between items-center ${
-                  index === openIndex ? 'bg-red-700 text-white shadow-md' : 'text-blue-900'
+                  index === openIndex ? 'bg-green text-white shadow-md' : 'text-blue-900'
                 }`}
               >
                 {faq.question}

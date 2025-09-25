@@ -62,7 +62,7 @@ export default function BannerSlider() {
                   <h2 className="text-3xl md:text-6xl font-extrabold leading-tight mb-4 text-white">
                     {slide.title}
                   </h2>
-                  <button className="bg-pink-600 text-white font-semibold px-6 py-3 rounded-full text-sm hover:bg-pink-700 transition-all">
+                  <button className="bg-green-600 text-white font-semibold px-6 py-3 rounded-full text-sm hover:bg-green-700 transition-all" onClick={() => {window.location.href = '/login';}}>
                     {slide.buttonText}
                   </button>
                 </div>

@@ -293,7 +293,7 @@ export default function CheckBookingsPage() {
                           onClick={() => setConfirmCancelId(b.bookingId)}
                           className={`inline-flex items-center gap-1 px-3 py-1.5 rounded ${
                             canCancel
-                              ? "bg-red-600 text-white hover:bg-red-700"
+                              ? "bg-red-600 text-white hover:bg-green"
                               : "bg-gray-200 text-gray-500 cursor-not-allowed"
                           }`}
                           title={canCancel ? "Cancel Booking" : "Already cancelled"}
@@ -387,7 +387,7 @@ export default function CheckBookingsPage() {
               </button>
               <button
                 onClick={() => cancelBooking(confirmCancelId)}
-                className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700"
+                className="px-4 py-2 rounded bg-red-600 text-white hover:bg-green"
               >
                 {cancelingId === confirmCancelId ? "Cancelling..." : "Confirm Cancel"}
               </button>

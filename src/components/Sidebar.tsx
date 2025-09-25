@@ -13,25 +13,25 @@ const Sidebar = ({ onSelect, selected }: SidebarProps) => {
       <div className="p-6 font-bold text-xl border-b border-gray-800">Creek Dashboard</div>
       <nav className="flex-1 p-4 space-y-2">
           <button
-              className={`w-full text-left px-4 py-2 rounded ${selected === 'dashboard' ? 'bg-pink-600' : ''}`}
+              className={`w-full text-left px-4 py-2 rounded ${selected === 'dashboard' ? 'bg-green-600' : ''}`}
               onClick={() => onSelect('dashboard')}
           >
               Dashboard
           </button>
         <button
-          className={`w-full text-left px-4 py-2 rounded ${selected === 'court' ? 'bg-pink-600' : ''}`}
+          className={`w-full text-left px-4 py-2 rounded ${selected === 'court' ? 'bg-green-600' : ''}`}
           onClick={() => onSelect('court')}
         >
           Tennis Courts
         </button>
         <button
-          className={`w-full text-left px-4 py-2 rounded ${selected === 'field' ? 'bg-pink-600' : ''}`}
+          className={`w-full text-left px-4 py-2 rounded ${selected === 'field' ? 'bg-green-600' : ''}`}
           onClick={() => onSelect('field')}
         >
           Football Field
         </button>
         <button
-          className={`w-full text-left px-4 py-2 rounded ${selected === 'members' ? 'bg-pink-600' : ''}`}
+          className={`w-full text-left px-4 py-2 rounded ${selected === 'members' ? 'bg-green-600' : ''}`}
           onClick={() => onSelect('members')}
         >
           Employee CRUD

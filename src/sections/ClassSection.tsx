@@ -3,36 +3,21 @@ import Image from 'next/image';
 const programs = [
   {
     id: '01',
-    image: '/court1.webp',
-    title: 'SINGLE PADEL COURT',
+    image: '/image2.jpeg',
+    title: 'OPEN COURT',
     description:
       'Focus on your game with one-on-one training or casual solo practice. Ideal for honing skills, improving techniques, and enjoying personal playtime.',
     link: '#',
   },
   {
     id: '02',
-    image: '/court2.jpg',
-    title: 'DOUBLE PADEL COURT',
+    image: '/image3.jpeg',
+    title: 'SEMI COVERED COURT',
     description:
       'Team up and compete in thrilling doubles matches. Perfect for socializing, enhancing teamwork, and engaging in dynamic, fast-paced games.',
     link: '#',
   },
-  {
-    id: '03',
-    image: '/court3.jpg',
-    title: 'INHOUSE CAFÉ',
-    description:
-      'Relax and refuel with delicious snacks and beverages at our cozy café.',
-    link: '#',
-  },
-  {
-    id: '04',
-    image: '/social.webp',
-    title: 'SOCIAL',
-    description:
-      'Connect, compete, and celebrate with a vibrant community of padel enthusiasts.',
-    link: '#',
-  },
+ 
 ];
 
 export default function WhatWeOffer() {
@@ -46,13 +31,11 @@ export default function WhatWeOffer() {
         At <span className="font-bold">Creek Sports Club</span>, we offer a vibrant and inclusive padel experience designed to cater to
         players of all levels and interests. Our programs include:
       </p>
-      <a href="#" className="text-red-700 font-semibold text-sm underline mb-8 inline-block">
-        ALL PROGRAMS
-      </a>
+  
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-10">
         {programs.map((program) => (
-          <div key={program.id} className="relative group h-80 overflow-hidden rounded-xl shadow-lg">
+          <div key={program.id} className="relative group h-80 overflow-hidden rounded-xl shadow-lg" >
             <Image
               src={program.image}
               alt={program.title}
@@ -62,9 +45,7 @@ export default function WhatWeOffer() {
             <div className="absolute inset-0 z-10 p-6 flex flex-col justify-end text-left text-white">
               <span className="text-xl font-bold mb-1">{program.title}</span>
               <p className="text-sm mb-2">{program.description}</p>
-              <a href={program.link} className="text-sm font-semibold underline">
-                LEARN MORE
-              </a>
+             
             </div>
             <div className="absolute top-2 left-2 z-20 text-white text-2xl font-bold opacity-70">
               {program.id}

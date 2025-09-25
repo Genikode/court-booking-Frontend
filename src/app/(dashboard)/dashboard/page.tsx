@@ -14,7 +14,7 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="bg-white p-6 rounded shadow">
             <h2 className="text-lg font-semibold text-gray-700">Total Courts</h2>
-            <p className="text-2xl font-bold text-blue-800 mt-2">4</p>
+            <p className="text-2xl font-bold text-blue-800 mt-2">2</p>
           </div>
           <div className="bg-white p-6 rounded shadow">
             <h2 className="text-lg font-semibold text-gray-700">Active Members</h2>

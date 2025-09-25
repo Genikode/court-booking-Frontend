@@ -31,7 +31,7 @@ export default function CoachSection() {
       <div className="max-w-7xl mx-auto text-center">
         {/* Heading */}
         <div className="mb-12">
-          <div className="w-10 h-1 bg-pink-600 mx-auto mb-2"></div>
+          <div className="w-10 h-1 bg-green-600 mx-auto mb-2"></div>
           <h2 className="text-4xl font-bold text-black">Our Coaches</h2>
         </div>
 
