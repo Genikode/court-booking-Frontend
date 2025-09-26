@@ -1,5 +1,5 @@
 // lib/api.ts
-const NEXT_PUBLIC_COURT_URL = "https://api.creeksportsclub.com";
+const NEXT_PUBLIC_COURT_URL = "https://creek-sport.ddns.net";
 const NEXT_PUBLIC_COURT_XAPI = "court_secret";
 type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
