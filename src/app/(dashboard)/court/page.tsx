@@ -6,23 +6,23 @@ import { Plus, Edit, Trash2, Clock, Upload } from "lucide-react";
 /* ---------------- Types ---------------- */
 type Court = {
   id: number;
-  name: string; 
+  name: string;
   courtName?: string;
   locationName: string;
   courtTypeId: number;
-  openTime: string;   // API returns: "HH:mm:ss"
-  closeTime: string;  // API returns: "HH:mm:ss"
-  courtImage?: string; // signedUrl
+  openTime: string;
+  closeTime: string;
+  courtImage?: string;
   hourlyPrice: number | string;
   status: string;
-  courtType?: string; // e.g., "Tennis Court", "Futsal Field", "Paddle Court"
+  courtType?: string;
 };
 
 type Slot = {
   id: number;
   courtId: number;
-  startTime: string;  // "HH:mm:ss"
-  endTime: string;    // "HH:mm:ss"
+  startTime: string;
+  endTime: string;
   status?: string;
 };
 
@@ -39,13 +39,9 @@ function formatTime12Hour(timeStr: string) {
     hour12: true,
   });
 }
-
-// HH:mm -> HH:mm:ss (for API)
 function toApiTime(t: string) {
   return t && t.length === 5 ? `${t}:00` : t;
 }
-
-// "HH:mm:ss" -> "HH:mm" (for <input type="time">)
 function toInputTime(t: string) {
   return t ? t.slice(0, 5) : "";
 }
@@ -66,7 +62,6 @@ export default function CourtPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteCourtId, setDeleteCourtId] = useState<number | null>(null);
 
-  // pagination + search
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
   const [search, setSearch] = useState("");
@@ -76,7 +71,9 @@ export default function CourtPage() {
     setError(null);
     try {
       const res = await api.get<{ data: { courts: Court[] } }>(
-        `/courts/get-all-courts?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`
+        `/courts/get-all-courts?page=${page}&limit=${limit}&search=${encodeURIComponent(
+          search
+        )}`
       );
       setCourts(res.data?.courts || []);
     } catch (err: any) {
@@ -93,8 +90,7 @@ export default function CourtPage() {
         `/court-slots/get-slots-by-court/${courtId}?page=1&limit=10&sort_by=startTime&sort_order=asc`
       );
       setSlots(res.data?.slots || []);
-    } catch (err) {
-      console.error("Error fetching slots:", err);
+    } catch {
       setError("Failed to fetch slots");
     }
   };
@@ -105,175 +101,191 @@ export default function CourtPage() {
   }, [page, search]);
 
   return (
-   <div className="p-6 text-black">
-  <div className="flex justify-between items-center mb-6">
-    <h2 className="text-2xl font-bold">Courts Management</h2>
-    <button
-      onClick={() => {
-        setEditingCourt(null);
-        setShowCourtModal(true);
-      }}
-      className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
-    >
-      <Plus size={18} /> Create Court
-    </button>
-  </div>
+    <div className="p-6 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 min-h-screen transition-colors">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold">Courts Management</h2>
+        <button
+          onClick={() => {
+            setEditingCourt(null);
+            setShowCourtModal(true);
+          }}
+          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
+        >
+          <Plus size={18} /> Create Court
+        </button>
+      </div>
 
-  {/* Error Tip */}
-  {error && (
-    <div className="mb-4 bg-red-100 text-red-700 px-4 py-2 rounded">
-      {error}
-    </div>
-  )}
+      {/* Error */}
+      {error && (
+        <div className="mb-4 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-200 px-4 py-2 rounded">
+          {error}
+        </div>
+      )}
 
-  {/* Search */}
-  <div className="mb-4 flex items-center gap-2">
-    <input
-      type="text"
-      placeholder="Search courts..."
-      value={search}
-      onChange={(e) => {
-        setPage(1);
-        setSearch(e.target.value);
-      }}
-      className="border px-3 py-2 rounded w-64 text-black"
-    />
-  </div>
+      {/* Search */}
+      <div className="mb-4">
+        <input
+          type="text"
+          placeholder="Search courts..."
+          value={search}
+          onChange={(e) => {
+            setPage(1);
+            setSearch(e.target.value);
+          }}
+          className="border border-gray-300 dark:border-gray-700 px-3 py-2 rounded w-64 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 outline-none"
+        />
+      </div>
 
-  <div className="bg-white shadow rounded-lg overflow-hidden">
-    <table className="w-full border-collapse">
-      <thead className="bg-black/5 text-left">
-        <tr>
-          <th className="px-4 py-2">ID</th>
-          <th className="px-4 py-2">Name</th>
-          <th className="px-4 py-2">Location</th>
-          <th className="px-4 py-2">Type</th>
-          <th className="px-4 py-2">Open</th>
-          <th className="px-4 py-2">Close</th>
-          <th className="px-4 py-2">Price</th>
-          <th className="px-4 py-2">Status</th>
-          <th className="px-4 py-2">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {loading ? (
-          <tr>
-            <td colSpan={9} className="text-center py-4">
-              Loading...
-            </td>
-          </tr>
-        ) : courts.length === 0 ? (
-          <tr>
-            <td colSpan={9} className="text-center py-4">
-              No courts found
-            </td>
-          </tr>
-        ) : (
-          courts.map((c) => (
-            <tr key={c.id} className="border-b">
-              <td className="px-4 py-2">{c.id}</td>
-              <td className="px-4 py-2 flex items-center gap-2">
-                {c.courtImage && (
-                  <img
-                    src={c.courtImage}
-                    alt="court"
-                    className="w-8 h-8 object-cover rounded"
-                  />
-                )}
-                {c.courtName || c.name}
-              </td>
-              <td className="px-4 py-2">{c.locationName}</td>
-              <td className="px-4 py-2">
-                {c.courtType ??
-                  (c.courtTypeId === 1
-                    ? "Tennis Court"
-                    : c.courtTypeId === 2
-                    ? "Futsal Field"
-                    : "—")}
-              </td>
-              <td className="px-4 py-2">{formatTime12Hour(c.openTime)}</td>
-              <td className="px-4 py-2">{formatTime12Hour(c.closeTime)}</td>
-              <td className="px-4 py-2">Rs {c.hourlyPrice}</td>
-              <td className="px-4 py-2">{c.status}</td>
-              <td className="px-4 py-2 flex gap-3">
-                <button
-                  onClick={() => {
-                    setEditingCourt(c);
-                    setShowCourtModal(true);
-                  }}
-                  className="text-blue-600 hover:text-blue-800"
-                >
-                  <Edit size={18} />
-                </button>
-                <button
-                  onClick={() => {
-                    setDeleteCourtId(c.id);
-                    setShowDeleteModal(true);
-                  }}
-                  className="text-red-600 hover:text-red-800"
-                >
-                  <Trash2 size={18} />
-                </button>
-                <button
-                  onClick={() => {
-                    setSelectedCourtId(c.id);
-                    fetchSlots(c.id);
-                    setShowSlotModal(true);
-                  }}
-                  className="text-black/60 hover:text-black"
-                >
-                  <Clock size={18} />
-                </button>
-              </td>
+      {/* Table */}
+      <div className="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
+        <table className="w-full text-left text-sm">
+          <thead className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 uppercase">
+            <tr>
+              <th className="px-4 py-3">ID</th>
+              <th className="px-4 py-3">Name</th>
+              <th className="px-4 py-3">Location</th>
+              <th className="px-4 py-3">Type</th>
+              <th className="px-4 py-3">Open</th>
+              <th className="px-4 py-3">Close</th>
+              <th className="px-4 py-3">Price</th>
+              <th className="px-4 py-3">Status</th>
+              <th className="px-4 py-3">Actions</th>
             </tr>
-          ))
-        )}
-      </tbody>
-    </table>
-  </div>
+          </thead>
+          <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+            {loading ? (
+              <tr>
+                <td colSpan={9} className="text-center py-6">
+                  Loading...
+                </td>
+              </tr>
+            ) : courts.length === 0 ? (
+              <tr>
+                <td colSpan={9} className="text-center py-6">
+                  No courts found
+                </td>
+              </tr>
+            ) : (
+              courts.map((c) => (
+                <tr
+                  key={c.id}
+                  className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                >
+                  <td className="px-4 py-3">{c.id}</td>
+                  <td className="px-4 py-3 flex items-center gap-2">
+                    {c.courtImage && (
+                      <img
+                        src={c.courtImage}
+                        alt="court"
+                        className="w-8 h-8 object-cover rounded-full border border-gray-300 dark:border-gray-600"
+                      />
+                    )}
+                    {c.courtName || c.name}
+                  </td>
+                  <td className="px-4 py-3">{c.locationName}</td>
+                  <td className="px-4 py-3">
+                    {c.courtType ??
+                      (c.courtTypeId === 1
+                        ? "Tennis Court"
+                        : c.courtTypeId === 2
+                        ? "Futsal Field"
+                        : "—")}
+                  </td>
+                  <td className="px-4 py-3">{formatTime12Hour(c.openTime)}</td>
+                  <td className="px-4 py-3">{formatTime12Hour(c.closeTime)}</td>
+                  <td className="px-4 py-3 font-medium">Rs {c.hourlyPrice}</td>
+                  <td className="px-4 py-3">
+                    <span
+                      className={`px-2 py-1 text-xs rounded-full ${
+                        c.status === "open"
+                          ? "bg-green-100 text-green-700 dark:bg-green-800 dark:text-green-200"
+                          : "bg-red-100 text-red-700 dark:bg-red-800 dark:text-red-200"
+                      }`}
+                    >
+                      {c.status}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 flex gap-2">
+                    <button
+                      onClick={() => {
+                        setEditingCourt(c);
+                        setShowCourtModal(true);
+                      }}
+                      className="p-2 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900 dark:text-blue-200 dark:hover:bg-blue-800"
+                    >
+                      <Edit size={16} />
+                    </button>
+                    <button
+                      onClick={() => {
+                        setDeleteCourtId(c.id);
+                        setShowDeleteModal(true);
+                      }}
+                      className="p-2 rounded-full bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-900 dark:text-red-300 dark:hover:bg-red-800"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                    <button
+                      onClick={() => {
+                        setSelectedCourtId(c.id);
+                        fetchSlots(c.id);
+                        setShowSlotModal(true);
+                      }}
+                      className="p-2 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+                    >
+                      <Clock size={16} />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
 
-  {/* Pagination */}
-  <div className="mt-4 flex justify-between items-center">
-    <button
-      disabled={page === 1}
-      onClick={() => setPage((p) => Math.max(1, p - 1))}
-      className="px-3 py-1 bg-black/10 rounded disabled:opacity-50"
-    >
-      Prev
-    </button>
-    <span>Page {page}</span>
-    <button
-      onClick={() => setPage((p) => p + 1)}
-      className="px-3 py-1 bg-black/10 rounded"
-    >
-      Next
-    </button>
-  </div>
+      {/* Pagination */}
+      <div className="mt-4 flex justify-center items-center gap-2">
+        <button
+          disabled={page === 1}
+          onClick={() => setPage((p) => Math.max(1, p - 1))}
+          className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200"
+        >
+          Prev
+        </button>
+        <span className="px-3 py-1 rounded bg-blue-600 text-white">
+          Page {page}
+        </span>
+        <button
+          onClick={() => setPage((p) => p + 1)}
+          className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200"
+        >
+          Next
+        </button>
+      </div>
 
-  {showCourtModal && (
-    <CourtModal
-      court={editingCourt}
-      onClose={() => setShowCourtModal(false)}
-      onSaved={fetchCourts}
-    />
-  )}
-  {showSlotModal && selectedCourtId && (
-    <SlotModal
-      courtId={selectedCourtId}
-      slots={slots}
-      onClose={() => setShowSlotModal(false)}
-      onSaved={() => fetchSlots(selectedCourtId)}
-    />
-  )}
-  {showDeleteModal && deleteCourtId && (
-    <DeleteModal
-      courtId={deleteCourtId}
-      onClose={() => setShowDeleteModal(false)}
-      onDeleted={fetchCourts}
-    />
-  )}
-</div>
-
+      {showCourtModal && (
+        <CourtModal
+          court={editingCourt}
+          onClose={() => setShowCourtModal(false)}
+          onSaved={fetchCourts}
+        />
+      )}
+      {showSlotModal && selectedCourtId && (
+        <SlotModal
+          courtId={selectedCourtId}
+          slots={slots}
+          onClose={() => setShowSlotModal(false)}
+          onSaved={() => fetchSlots(selectedCourtId)}
+        />
+      )}
+      {showDeleteModal && deleteCourtId && (
+        <DeleteModal
+          courtId={deleteCourtId}
+          onClose={() => setShowDeleteModal(false)}
+          onDeleted={fetchCourts}
+        />
+      )}
+    </div>
   );
 }
 
@@ -296,13 +308,19 @@ function CourtModal({
         locationName: court.locationName || "",
         courtTypeId:
           court.courtTypeId ??
-          (court.courtType === "Tennis Court" ? 1 : court.courtType === "Futsal Field" ? 2 : 1),
+          (court.courtType === "Tennis Court"
+            ? 1
+            : court.courtType === "Futsal Field"
+            ? 2
+            : 1),
         openTime: toInputTime(court.openTime || "08:00:00"),
         closeTime: toInputTime(court.closeTime || "22:00:00"),
-        hourlyPrice: typeof court.hourlyPrice === "string" ? parseFloat(court.hourlyPrice) : (court.hourlyPrice || 0),
+        hourlyPrice:
+          typeof court.hourlyPrice === "string"
+            ? parseFloat(court.hourlyPrice)
+            : court.hourlyPrice || 0,
         status: court.status || "open",
         courtImage: court.courtImage || "",
-        courtType: court.courtType || "",
       };
     }
     return {
@@ -316,7 +334,6 @@ function CourtModal({
       hourlyPrice: 0,
       status: "open",
       courtImage: "",
-      courtType: "",
     };
   });
 
@@ -325,8 +342,8 @@ function CourtModal({
       name: form.courtName,
       locationName: form.locationName,
       courtTypeId: form.courtTypeId,
-      openTime: form.openTime,   // if API requires HH:mm:ss, use toApiTime()
-      closeTime: form.closeTime, // if API requires HH:mm:ss, use toApiTime()
+      openTime: form.openTime,
+      closeTime: form.closeTime,
       hourlyPrice: form.hourlyPrice,
       status: form.status,
       courtImage: form.courtImage,
@@ -344,138 +361,136 @@ function CourtModal({
   const handleImageUpload = async (file: File) => {
     const formData = new FormData();
     formData.append("court_image", file);
-
-    const res = await api.put<{
-      data: { key: string; url: string; signedUrl: string };
-    }>("/upload-image", formData, {}, true);
-
+    const res = await api.put<{ data: { key: string; url: string; signedUrl: string } }>(
+      "/upload-image",
+      formData,
+      {},
+      true
+    );
     if (res?.data?.signedUrl) {
-      // store SIGNED URL as requested
       setForm((prev: any) => ({ ...prev, courtImage: res.data.url }));
     }
   };
 
   return (
-  <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center">
-  <div className="bg-white p-6 rounded-lg w-full max-w-lg text-black">
-    <h3 className="text-xl font-bold mb-4">
-      {court ? "Update Court" : "Create Court"}
-    </h3>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-lg text-gray-800 dark:text-gray-100 shadow-lg">
+        <h3 className="text-xl font-bold mb-4">
+          {court ? "Update Court" : "Create Court"}
+        </h3>
 
-    <div className="space-y-3">
-      <input
-        type="text"
-        placeholder="Court Name"
-        className="w-full border px-3 py-2 rounded text-black"
-        value={form.courtName}
-        onChange={(e) => setForm({ ...form, courtName: e.target.value })}
-      />
-
-      <input
-        type="text"
-        placeholder="Location"
-        className="w-full border px-3 py-2 rounded text-black"
-        value={form.locationName}
-        onChange={(e) => setForm({ ...form, locationName: e.target.value })}
-      />
-
-      {/* Court Type Dropdown */}
-      <div>
-        <label className="block text-sm mb-1">Court Type</label>
-        <select
-          value={form.courtTypeId}
-          onChange={(e) =>
-            setForm({ ...form, courtTypeId: Number(e.target.value) })
-          }
-          className="w-full border px-3 py-2 rounded text-black"
-        >
-          <option value={1}>Tennis Court</option>
-          <option value={2}>Futsal Field</option>
-        </select>
-      </div>
-
-      {/* Open / Close Time */}
-      <div className="flex gap-3">
-        <div className="flex-1">
-          <label className="block text-sm">Open Time</label>
+        <div className="space-y-3">
           <input
-            type="time"
-            className="w-full border px-3 py-2 rounded text-black"
-            value={form.openTime}
-            onChange={(e) => setForm({ ...form, openTime: e.target.value })}
+            type="text"
+            placeholder="Court Name"
+            className="w-full border border-gray-300 dark:border-gray-700 px-3 py-2 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+            value={form.courtName}
+            onChange={(e) => setForm({ ...form, courtName: e.target.value })}
           />
-        </div>
-        <div className="flex-1">
-          <label className="block text-sm">Close Time</label>
+
           <input
-            type="time"
-            className="w-full border px-3 py-2 rounded text-black"
-            value={form.closeTime}
-            onChange={(e) => setForm({ ...form, closeTime: e.target.value })}
+            type="text"
+            placeholder="Location"
+            className="w-full border border-gray-300 dark:border-gray-700 px-3 py-2 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+            value={form.locationName}
+            onChange={(e) => setForm({ ...form, locationName: e.target.value })}
           />
-        </div>
-      </div>
 
-      <input
-        type="number"
-        placeholder="Hourly Price"
-        className="w-full border px-3 py-2 rounded text-black"
-        value={Number(form.hourlyPrice)}
-        onChange={(e) =>
-          setForm({ ...form, hourlyPrice: Number(e.target.value) })
-        }
-      />
+          <div>
+            <label className="block text-sm mb-1">Court Type</label>
+            <select
+              value={form.courtTypeId}
+              onChange={(e) =>
+                setForm({ ...form, courtTypeId: Number(e.target.value) })
+              }
+              className="w-full border border-gray-300 dark:border-gray-700 px-3 py-2 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+            >
+              <option value={1}>Tennis Court</option>
+              <option value={2}>Futsal Field</option>
+            </select>
+          </div>
 
-      {/* Image Upload */}
-      <div>
-        <label className="block text-sm mb-1">Court Image</label>
-        <label className="inline-flex items-center gap-2 px-3 py-2 border rounded cursor-pointer hover:bg-black/5">
-          <Upload size={16} />
-          <span>Upload image</span>
+          <div className="flex gap-3">
+            <div className="flex-1">
+              <label className="block text-sm">Open Time</label>
+              <input
+                type="time"
+                className="w-full border border-gray-300 dark:border-gray-700 px-3 py-2 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                value={form.openTime}
+                onChange={(e) =>
+                  setForm({ ...form, openTime: e.target.value })
+                }
+              />
+            </div>
+            <div className="flex-1">
+              <label className="block text-sm">Close Time</label>
+              <input
+                type="time"
+                className="w-full border border-gray-300 dark:border-gray-700 px-3 py-2 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                value={form.closeTime}
+                onChange={(e) =>
+                  setForm({ ...form, closeTime: e.target.value })
+                }
+              />
+            </div>
+          </div>
+
           <input
-            type="file"
-            accept="image/*"
-            className="hidden"
+            type="number"
+            placeholder="Hourly Price"
+            className="w-full border border-gray-300 dark:border-gray-700 px-3 py-2 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+            value={Number(form.hourlyPrice)}
             onChange={(e) =>
-              e.target.files && handleImageUpload(e.target.files[0])
+              setForm({ ...form, hourlyPrice: Number(e.target.value) })
             }
           />
-        </label>
 
-        {form.courtImage && (
-          <a
-            href={form.courtImage}
-            target="_blank"
-            rel="noopener noreferrer"
+          <div>
+            <label className="block text-sm mb-1">Court Image</label>
+            <label className="inline-flex items-center gap-2 px-3 py-2 border border-gray-300 dark:border-gray-700 rounded cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition">
+              <Upload size={16} />
+              <span>Upload image</span>
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) =>
+                  e.target.files && handleImageUpload(e.target.files[0])
+                }
+              />
+            </label>
+            {form.courtImage && (
+              <a
+                href={form.courtImage}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img
+                  src={form.courtImage}
+                  alt="court"
+                  className="mt-2 w-24 h-24 object-cover rounded"
+                />
+              </a>
+            )}
+          </div>
+        </div>
+
+        <div className="mt-6 flex justify-end gap-3">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 rounded border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
           >
-            <img
-              src={form.courtImage}
-              alt="court"
-              className="mt-2 w-24 h-24 object-cover rounded"
-            />
-          </a>
-        )}
+            Cancel
+          </button>
+          <button
+            onClick={saveCourt}
+            className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 transition"
+          >
+            Save
+          </button>
+        </div>
       </div>
     </div>
-
-    {/* Actions */}
-    <div className="mt-6 flex justify-end gap-3">
-      <button
-        onClick={onClose}
-        className="px-4 py-2 rounded border border-black text-black hover:bg-black/10 transition"
-      >
-        Cancel
-      </button>
-      <button
-        onClick={saveCourt}
-        className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 transition"
-      >
-        Save
-      </button>
-    </div>
-  </div>
-</div>
-
   );
 }
 
@@ -501,7 +516,6 @@ function SlotModal({
   });
   const [error, setError] = useState<string | null>(null);
 
-  // Prefill slot start/end with court open/close ONCE per courtId
   useEffect(() => {
     const fetchCourt = async () => {
       try {
@@ -510,8 +524,8 @@ function SlotModal({
         );
         const court = res.data?.court;
         if (court) {
-          const open = toInputTime(court.openTime);   // "20:00"
-          const close = toInputTime(court.closeTime); // "22:00"
+          const open = toInputTime(court.openTime);
+          const close = toInputTime(court.closeTime);
           setBaseTimes({ open, close });
           setNewSlot({ startTime: open, endTime: close });
         }
@@ -527,12 +541,10 @@ function SlotModal({
     try {
       await api.post("/court-slots/create-slot", {
         courtId,
-        startTime: toApiTime(newSlot.startTime), // "HH:mm:ss"
-        endTime: toApiTime(newSlot.endTime),     // "HH:mm:ss"
+        startTime: toApiTime(newSlot.startTime),
+        endTime: toApiTime(newSlot.endTime),
       });
-      // refresh list
       onSaved();
-      // reset inputs back to the court's open/close (avoid empty -> 12:30 defaults)
       setNewSlot({ startTime: baseTimes.open, endTime: baseTimes.close });
     } catch (err: any) {
       setError(err?.message || "Failed to create slot");
@@ -550,89 +562,87 @@ function SlotModal({
   };
 
   return (
-<div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center">
-  <div className="bg-white p-6 rounded-lg w-full max-w-2xl text-black">
-    <h3 className="text-xl font-bold mb-4">Manage Slots</h3>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-2xl text-gray-800 dark:text-gray-100 shadow-lg">
+        <h3 className="text-xl font-bold mb-4">Manage Slots</h3>
 
-    {/* Error Tip */}
-    {error && (
-      <div className="mb-4 bg-red-100 text-red-700 px-4 py-2 rounded">
-        {error}
-      </div>
-    )}
+        {error && (
+          <div className="mb-4 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-200 px-4 py-2 rounded">
+            {error}
+          </div>
+        )}
 
-    <div className="flex gap-3 mb-4 items-center">
-      <div className="flex flex-col">
-        <label className="text-sm">Start Time</label>
-        <input
-          type="time"
-          value={newSlot.startTime}
-          min={baseTimes.open || undefined}
-          max={baseTimes.close || undefined}
-          onChange={(e) =>
-            setNewSlot({ ...newSlot, startTime: e.target.value })
-          }
-          className="border px-3 py-2 rounded text-black"
-        />
+        <div className="flex gap-3 mb-4 items-end">
+          <div className="flex flex-col flex-1">
+            <label className="text-sm mb-1">Start Time</label>
+            <input
+              type="time"
+              value={newSlot.startTime}
+              min={baseTimes.open || undefined}
+              max={baseTimes.close || undefined}
+              onChange={(e) =>
+                setNewSlot({ ...newSlot, startTime: e.target.value })
+              }
+              className="border border-gray-300 dark:border-gray-700 px-3 py-2 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+            />
+          </div>
+          <div className="flex flex-col flex-1">
+            <label className="text-sm mb-1">End Time</label>
+            <input
+              type="time"
+              value={newSlot.endTime}
+              min={baseTimes.open || undefined}
+              max={baseTimes.close || undefined}
+              onChange={(e) =>
+                setNewSlot({ ...newSlot, endTime: e.target.value })
+              }
+              className="border border-gray-300 dark:border-gray-700 px-3 py-2 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+            />
+          </div>
+          <button
+            onClick={addSlot}
+            className="h-10 px-4 rounded bg-green-600 text-white hover:bg-green-700 transition"
+          >
+            Add Slot
+          </button>
+        </div>
+
+        <table className="w-full text-sm">
+          <thead className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
+            <tr>
+              <th className="px-3 py-2 text-left">Start</th>
+              <th className="px-3 py-2 text-left">End</th>
+              <th className="px-3 py-2 text-left">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+            {slots.map((s) => (
+              <tr key={s.id}>
+                <td className="px-3 py-2">{formatTime12Hour(s.startTime)}</td>
+                <td className="px-3 py-2">{formatTime12Hour(s.endTime)}</td>
+                <td className="px-3 py-2">
+                  <button
+                    onClick={() => deleteSlot(s.id)}
+                    className="p-2 rounded-full bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-900 dark:text-red-200 dark:hover:bg-red-800"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        <div className="mt-4 flex justify-end">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200"
+          >
+            Close
+          </button>
+        </div>
       </div>
-      <div className="flex flex-col">
-        <label className="text-sm">End Time</label>
-        <input
-          type="time"
-          value={newSlot.endTime}
-          min={baseTimes.open || undefined}
-          max={baseTimes.close || undefined}
-          onChange={(e) =>
-            setNewSlot({ ...newSlot, endTime: e.target.value })
-          }
-          className="border px-3 py-2 rounded text-black"
-        />
-      </div>
-      <button
-        onClick={addSlot}
-        className="self-end bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-      >
-        Add Slot
-      </button>
     </div>
-
-    <table className="w-full border-collapse mb-4">
-      <thead>
-        <tr className="bg-black/5">
-          <th className="px-3 py-2 text-left">Start</th>
-          <th className="px-3 py-2 text-left">End</th>
-          <th className="px-3 py-2 text-left">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {slots.map((s) => (
-          <tr key={s.id} className="border-b">
-            <td className="px-3 py-2">{formatTime12Hour(s.startTime)}</td>
-            <td className="px-3 py-2">{formatTime12Hour(s.endTime)}</td>
-            <td className="px-3 py-2 flex items-center gap-3">
-              <button
-                onClick={() => deleteSlot(s.id)}
-                className="text-red-600 hover:text-red-800"
-              >
-                <Trash2 size={18} />
-              </button>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-
-    <div className="flex justify-end">
-      <button
-        onClick={onClose}
-        className="px-4 py-2 rounded bg-black/10 hover:bg-black/20"
-      >
-        Close
-      </button>
-    </div>
-  </div>
-</div>
-
   );
 }
 
@@ -653,22 +663,23 @@ function DeleteModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center">
-      <div className="bg-white p-6 rounded-lg w-full max-w-sm text-center">
-        <h3 className="text-lg font-bold mb-4">Delete Court?</h3>
-        <p className="mb-6 text-gray-600">
-          Are you sure you want to delete this court? This action cannot be undone.
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-sm text-gray-800 dark:text-gray-100 shadow-lg text-center">
+        <h3 className="text-lg font-bold mb-2">Delete Court?</h3>
+        <p className="mb-6 text-sm text-gray-600 dark:text-gray-300">
+          Are you sure you want to delete this court? This action cannot be
+          undone.
         </p>
         <div className="flex justify-center gap-3">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+            className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200"
           >
             Cancel
           </button>
           <button
             onClick={handleDelete}
-            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-green"
+            className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700 transition"
           >
             Delete
           </button>

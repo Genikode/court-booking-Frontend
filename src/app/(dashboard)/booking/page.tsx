@@ -17,15 +17,15 @@ import { getUser } from "@/lib/auth";
 /* ---------------- Types ---------------- */
 type Booking = {
   bookingId: number;
-  bookingDate: string; // ISO
-  status: string;      // booked | cancelled | ...
+  bookingDate: string;
+  status: string;
   isPaid: 0 | 1;
   courtName: string;
   courtType: string;
-  startTime: string;   // "HH:mm:ss"
-  endTime: string;     // "HH:mm:ss"
+  startTime: string;
+  endTime: string;
   customerPhone: string;
-  paymentProofUrl?: string | null; // if present, show "View Proof"
+  paymentProofUrl?: string | null;
 };
 
 type MyBookingsResponse = {
@@ -57,19 +57,23 @@ function Pill({
   children,
   color = "blue",
   className = "",
-}: { children: React.ReactNode; color?: "blue" | "green" | "yellow" | "red" | "gray"; className?: string }) {
+}: {
+  children: React.ReactNode;
+  color?: "blue" | "green" | "yellow" | "red" | "gray";
+  className?: string;
+}) {
   const base =
-    "inline-flex items-center justify-center rounded-full px-2.5 py-1 shrink-0 whitespace-nowrap leading-none border text-[11px]";
+    "inline-flex items-center justify-center rounded-full px-2.5 py-1 shrink-0 whitespace-nowrap leading-none border text-[11px] font-medium";
   const styles =
     color === "green"
-      ? "bg-emerald-50 text-emerald-700 border-emerald-100"
+      ? "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-200 border-emerald-200 dark:border-emerald-800"
       : color === "yellow"
-      ? "bg-yellow-50 text-yellow-700 border-yellow-100"
+      ? "bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-200 border-yellow-200 dark:border-yellow-800"
       : color === "red"
-      ? "bg-red-50 text-red-700 border-red-100"
+      ? "bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-200 border-red-200 dark:border-red-800"
       : color === "gray"
-      ? "bg-gray-50 text-gray-700 border-gray-200"
-      : "bg-blue-50 text-blue-700 border-blue-100";
+      ? "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700"
+      : "bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-200 border-blue-200 dark:border-blue-800";
   return <span className={`${base} ${styles} ${className}`}>{children}</span>;
 }
 
@@ -81,27 +85,22 @@ export default function MyBookingsPage() {
   const [err, setErr] = useState<string | null>(null);
   const [search, setSearch] = useState("");
 
-  // proof upload state per bookingId
   const [uploadingFor, setUploadingFor] = useState<number | null>(null);
-  const [pendingProof, setPendingProof] = useState<Record<number, { url: string; name: string }>>(
-    {}
-  );
+  const [pendingProof, setPendingProof] = useState<
+    Record<number, { url: string; name: string }>
+  >({});
   const [submittingFor, setSubmittingFor] = useState<number | null>(null);
 
-  // image preview modal
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-  // prefill phone from localStorage `userData.phoneNumber` if available
-
   const fetchBookings = async () => {
-  const currentUser = getUser();
-  const phoneNumber = currentUser?.phoneNumber ;
+    const currentUser = getUser();
+    const phoneNumber = currentUser?.phoneNumber;
     setLoading(true);
     try {
       const res = await api.get<MyBookingsResponse>(
         `/court-slots/get-my-bookings?phoneNumber=${encodeURIComponent(phoneNumber)}`
       );
-      console.log(res);
       setBookings(res.data?.bookings || []);
     } catch (e: any) {
       setErr(e?.message || "Failed to load your bookings");
@@ -111,8 +110,7 @@ export default function MyBookingsPage() {
   };
 
   useEffect(() => {
-   fetchBookings();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    fetchBookings();
   }, []);
 
   const filtered = useMemo(() => {
@@ -132,24 +130,15 @@ export default function MyBookingsPage() {
     setUploadingFor(bookingId);
     try {
       const fd = new FormData();
-      // the field name MUST be "payment_proof" (as specified)
       fd.append("payment_proof", file);
-
-      // Expecting: { data: { key, url, signedUrl } }
       const res = await api.put<{
-        status: number;
-        success: boolean;
-        message: string;
-        data: { key: string; url: string; signedUrl: string };
+        data: { url: string };
       }>("/upload-image", fd, {}, true);
 
       const signed = res?.data?.url || "";
       if (!signed) throw new Error("Upload did not return a signed URL");
 
-      setPendingProof((m) => ({
-        ...m,
-        [bookingId]: { url: signed, name: file.name },
-      }));
+      setPendingProof((m) => ({ ...m, [bookingId]: { url: signed, name: file.name } }));
     } catch (e: any) {
       setErr(e?.message || "Failed to upload payment proof");
     } finally {
@@ -157,21 +146,16 @@ export default function MyBookingsPage() {
     }
   };
 
-  // Attach proof to booking (adjust endpoint if yours differs)
   const submitPaymentProof = async (bookingId: number) => {
     const proof = pendingProof[bookingId];
     if (!proof?.url) return;
-
     setSubmittingFor(bookingId);
     setErr(null);
     try {
-      // CHANGE PATH if your API uses a different endpoint
       await api.put("/customers/send-payment-proof", {
         bookingId: String(bookingId),
-        paymentUrl: proof.url, // save SIGNED URL as requested
+        paymentUrl: proof.url,
       });
-
-      // refresh list and clear pending proof for this booking
       await fetchBookings();
       setPendingProof((m) => {
         const { [bookingId]: _, ...rest } = m;
@@ -185,227 +169,225 @@ export default function MyBookingsPage() {
   };
 
   return (
-<div className="p-4 sm:p-6 max-w-4xl mx-auto text-[14px] text-black">
-  {/* Header */}
-  <div className="mb-4">
-    <h1 className="text-2xl font-semibold">My Bookings</h1>
-    <p className="text-[13px]">View and manage your court bookings.</p>
-  </div>
-
-  {/* Phone + Search */}
-  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
-    <div className="flex items-center gap-2 w-full sm:w-[320px]">
-      <input
-        type="tel"
-        placeholder="Your phone (e.g., +923001234567)"
-        value={phone}
-        onChange={(e) => setPhone(e.target.value)}
-        className="w-full px-3 py-2 border rounded-lg text-black"
-      />
-      <button
-        onClick={() => fetchBookings()}
-        className="px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
-      >
-        Load
-      </button>
-    </div>
-
-    <div className="w-full sm:w-72 relative">
-      <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-black/50" />
-      <input
-        type="text"
-        placeholder="Search bookings..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="w-full pl-9 pr-3 py-2 border rounded-lg text-black"
-      />
-    </div>
-  </div>
-
-  {/* Error */}
-  {err && (
-    <div className="mb-4 flex items-start gap-2 rounded-lg bg-red-50 text-red-700 px-3 py-2">
-      <AlertCircle className="w-4 h-4 mt-[2px]" />
-      <span className="text-sm">{err}</span>
-    </div>
-  )}
-
-  {/* List */}
-  <div className="grid grid-cols-1 gap-4">
-    {loading ? (
-      Array.from({ length: 4 }).map((_, i) => (
-        <div
-          key={i}
-          className="h-28 bg-white rounded-2xl border border-slate-200 ring-1 ring-slate-100 shadow-sm animate-pulse"
-        />
-      ))
-    ) : filtered.length === 0 ? (
-      <div className="text-center py-10">No bookings found.</div>
-    ) : (
-      filtered.map((b) => {
-        const isBooked = b.status?.toLowerCase() === "booked";
-        const canUpload = isBooked && b.isPaid === 0;
-
-        return (
-          <div
-            key={b.bookingId}
-            className="bg-white rounded-2xl border border-slate-200 ring-1 ring-slate-100 shadow-sm p-3 text-black"
-          >
-            {/* Top row */}
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <div className="min-w-0">
-                <div className="font-semibold text-[15px] truncate">
-                  {b.courtName}
-                </div>
-                <div className="text-[12px]">{b.courtType}</div>
-              </div>
-              <div className="flex items-center gap-2">
-                {b.isPaid ? (
-                  <Pill color="green">Paid</Pill>
-                ) : (
-                  <Pill color="yellow">Unpaid</Pill>
-                )}
-                {isBooked ? (
-                  <Pill color="blue">Booked</Pill>
-                ) : (
-                  <Pill color="gray" className="capitalize">
-                    {b.status}
-                  </Pill>
-                )}
-              </div>
-            </div>
-
-            {/* Details */}
-            <div className="mt-2 grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-4">
-              <div className="flex items-center gap-1">
-                <CalendarDays className="w-4 h-4 text-black/60" />
-                <span className="text-[13px]">{formatDate(b.bookingDate)}</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Clock className="w-4 h-4 text-black/60" />
-                <span className="text-[13px]">
-                  {formatTime12Hour(b.startTime)} – {formatTime12Hour(b.endTime)}
-                </span>
-              </div>
-            </div>
-
-            {/* Proof row */}
-            <div className="mt-3 flex flex-wrap items-center gap-2">
-              {b.paymentProofUrl ? (
-                <button
-                  onClick={() => setPreviewUrl(b.paymentProofUrl!)}
-                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border hover:bg-gray-50"
-                >
-                  <ImageIcon className="w-4 h-4" />
-                  View Payment Proof
-                </button>
-              ) : (
-                <Pill color="gray">No proof uploaded</Pill>
-              )}
-
-              <label
-                className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border cursor-pointer ${
-                  canUpload ? "hover:bg-gray-50" : "opacity-50 cursor-not-allowed"
-                }`}
-              >
-                <Upload className="w-4 h-4" />
-                <span>Upload Proof</span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  disabled={!canUpload}
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) onFilePick(b.bookingId, file);
-                    if (e.currentTarget) e.currentTarget.value = "";
-                  }}
-                />
-              </label>
-
-              {pendingProof[b.bookingId]?.url && (
-                <>
-                  <button
-                    onClick={() => setPreviewUrl(pendingProof[b.bookingId].url)}
-                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border hover:bg-gray-50"
-                  >
-                    <ImageIcon className="w-4 h-4" />
-                    Preview upload
-                  </button>
-                  <button
-                    disabled={submittingFor === b.bookingId}
-                    onClick={() => submitPaymentProof(b.bookingId)}
-                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-60"
-                  >
-                    {submittingFor === b.bookingId ? (
-                      <>
-                        <svg
-                          className="animate-spin h-4 w-4"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          />
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                          />
-                        </svg>
-                        Submitting…
-                      </>
-                    ) : (
-                      <>
-                        <CheckCircle2 className="w-4 h-4" />
-                        Submit Proof
-                      </>
-                    )}
-                  </button>
-                </>
-              )}
-
-              {uploadingFor === b.bookingId && (
-                <span className="text-[13px]">Uploading…</span>
-              )}
-            </div>
-          </div>
-        );
-      })
-    )}
-  </div>
-
-  {/* Image preview modal */}
-  {previewUrl && (
-    <div
-      className="fixed inset-0 bg-black/60 backdrop-blur-[1px] flex items-center justify-center z-50"
-      onClick={() => setPreviewUrl(null)}
-    >
-      <div
-        className="relative max-w-3xl w-auto max-h-[85vh] p-2"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button
-          onClick={() => setPreviewUrl(null)}
-          className="absolute -top-10 right-0 text-white hover:opacity-80"
-        >
-          <X className="w-6 h-6" />
-        </button>
-        <img
-          src={previewUrl}
-          alt="Payment Proof"
-          className="rounded-lg shadow-2xl max-h-[85vh] w-auto object-contain"
-        />
+    <div className="p-4 sm:p-6 max-w-4xl mx-auto text-[14px] text-gray-900 dark:text-gray-100">
+      {/* Header */}
+      <div className="mb-4">
+        <h1 className="text-2xl font-bold">My Bookings</h1>
+        <p className="text-[13px] text-gray-600 dark:text-gray-400">
+          View and manage your court bookings.
+        </p>
       </div>
-    </div>
-  )}
-</div>
 
+      {/* Phone + Search */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
+        <div className="flex items-center gap-2 w-full sm:w-[320px]">
+          <input
+            type="tel"
+            placeholder="Your phone (e.g., +923001234567)"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            className="w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100"
+          />
+          <button
+            onClick={() => fetchBookings()}
+            className="px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition"
+          >
+            Load
+          </button>
+        </div>
+
+        <div className="w-full sm:w-72 relative">
+          <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 dark:text-gray-400" />
+          <input
+            type="text"
+            placeholder="Search bookings..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-9 pr-3 py-2 border rounded-lg bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100"
+          />
+        </div>
+      </div>
+
+      {/* Error */}
+      {err && (
+        <div className="mb-4 flex items-start gap-2 rounded-lg bg-red-50 dark:bg-red-900/40 text-red-700 dark:text-red-200 px-3 py-2">
+          <AlertCircle className="w-4 h-4 mt-[2px]" />
+          <span className="text-sm">{err}</span>
+        </div>
+      )}
+
+      {/* List */}
+      <div className="grid grid-cols-1 gap-4">
+        {loading ? (
+          Array.from({ length: 4 }).map((_, i) => (
+            <div
+              key={i}
+              className="h-28 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm animate-pulse"
+            />
+          ))
+        ) : filtered.length === 0 ? (
+          <div className="text-center py-10 text-gray-600 dark:text-gray-400">
+            No bookings found.
+          </div>
+        ) : (
+          filtered.map((b) => {
+            const isBooked = b.status?.toLowerCase() === "booked";
+            const canUpload = isBooked && b.isPaid === 0;
+
+            return (
+              <div
+                key={b.bookingId}
+                className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-4"
+              >
+                {/* Top row */}
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <div className="font-semibold text-[15px]">{b.courtName}</div>
+                    <div className="text-[12px] text-gray-600 dark:text-gray-400">
+                      {b.courtType}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {b.isPaid ? <Pill color="green">Paid</Pill> : <Pill color="yellow">Unpaid</Pill>}
+                    {isBooked ? (
+                      <Pill color="blue">Booked</Pill>
+                    ) : (
+                      <Pill color="gray" className="capitalize">
+                        {b.status}
+                      </Pill>
+                    )}
+                  </div>
+                </div>
+
+                {/* Details */}
+                <div className="mt-2 flex flex-wrap gap-4 text-sm text-gray-700 dark:text-gray-300">
+                  <div className="flex items-center gap-1">
+                    <CalendarDays className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                    {formatDate(b.bookingDate)}
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Clock className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                    {formatTime12Hour(b.startTime)} – {formatTime12Hour(b.endTime)}
+                  </div>
+                </div>
+
+                {/* Proof row */}
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  {b.paymentProofUrl ? (
+                    <button
+                      onClick={() => setPreviewUrl(b.paymentProofUrl!)}
+                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                    >
+                      <ImageIcon className="w-4 h-4" />
+                      View Payment Proof
+                    </button>
+                  ) : (
+                    <Pill color="gray">No proof uploaded</Pill>
+                  )}
+
+                  <label
+                    className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer ${
+                      canUpload ? "hover:bg-gray-50 dark:hover:bg-gray-700" : "opacity-50 cursor-not-allowed"
+                    }`}
+                  >
+                    <Upload className="w-4 h-4" />
+                    <span>Upload Proof</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      disabled={!canUpload}
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) onFilePick(b.bookingId, file);
+                        if (e.currentTarget) e.currentTarget.value = "";
+                      }}
+                    />
+                  </label>
+
+                  {pendingProof[b.bookingId]?.url && (
+                    <>
+                      <button
+                        onClick={() => setPreviewUrl(pendingProof[b.bookingId].url)}
+                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                      >
+                        <ImageIcon className="w-4 h-4" />
+                        Preview Upload
+                      </button>
+                      <button
+                        disabled={submittingFor === b.bookingId}
+                        onClick={() => submitPaymentProof(b.bookingId)}
+                        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-60 transition"
+                      >
+                        {submittingFor === b.bookingId ? (
+                          <>
+                            <svg
+                              className="animate-spin h-4 w-4"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                            >
+                              <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                              />
+                              <path
+                                className="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                              />
+                            </svg>
+                            Submitting…
+                          </>
+                        ) : (
+                          <>
+                            <CheckCircle2 className="w-4 h-4" />
+                            Submit Proof
+                          </>
+                        )}
+                      </button>
+                    </>
+                  )}
+
+                  {uploadingFor === b.bookingId && (
+                    <span className="text-[13px] text-gray-600 dark:text-gray-400">
+                      Uploading…
+                    </span>
+                  )}
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+
+      {/* Image preview modal */}
+      {previewUrl && (
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50"
+          onClick={() => setPreviewUrl(null)}
+        >
+          <div
+            className="relative max-w-3xl w-auto max-h-[85vh] p-2"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setPreviewUrl(null)}
+              className="absolute -top-10 right-0 text-white hover:opacity-80"
+            >
+              <X className="w-6 h-6" />
+            </button>
+            <img
+              src={previewUrl}
+              alt="Payment Proof"
+              className="rounded-lg shadow-2xl max-h-[85vh] w-auto object-contain"
+            />
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

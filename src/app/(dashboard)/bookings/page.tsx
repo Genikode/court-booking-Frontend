@@ -172,7 +172,7 @@ export default function CheckBookingsPage() {
     );
 
   return (
-<div className="p-6 text-[13px] text-black">
+<div className="p-6 text-[13px] text-gray-800 dark:text-gray-100 bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors">
   {/* Header */}
   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
     <h2 className="text-xl font-semibold">Check Bookings</h2>
@@ -180,7 +180,7 @@ export default function CheckBookingsPage() {
     {/* Search */}
     <div className="flex items-center gap-2">
       <div className="relative">
-        <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-black/50" />
+        <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 dark:text-gray-400" />
         <input
           type="text"
           placeholder="Search bookings..."
@@ -189,7 +189,7 @@ export default function CheckBookingsPage() {
             setPage(1);
             setSearch(e.target.value);
           }}
-          className="pl-9 border px-3 py-2 rounded w-72 text-[13px] text-black"
+          className="pl-9 border border-gray-300 dark:border-gray-700 px-3 py-2 rounded w-72 text-[13px] bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 outline-none"
         />
       </div>
     </div>
@@ -197,15 +197,15 @@ export default function CheckBookingsPage() {
 
   {/* Error Tip */}
   {error && (
-    <div className="mb-4 bg-red-100 text-red-700 px-4 py-2 rounded">
+    <div className="mb-4 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-200 px-4 py-2 rounded">
       {error}
     </div>
   )}
 
   {/* Table */}
-  <div className="bg-white shadow rounded-lg overflow-hidden">
-    <table className="w-full border-collapse">
-      <thead className="bg-black/5 text-left">
+  <div className="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
+    <table className="w-full border-collapse text-sm">
+      <thead className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
         <tr>
           <th className="px-4 py-2 font-medium">Booking ID</th>
           <th className="px-4 py-2 font-medium">Date</th>
@@ -214,13 +214,12 @@ export default function CheckBookingsPage() {
           <th className="px-4 py-2 font-medium">Type</th>
           <th className="px-4 py-2 font-medium">Price</th>
           <th className="px-4 py-2 font-medium">Customer</th>
-    
           <th className="px-4 py-2 font-medium">Paid</th>
           <th className="px-4 py-2 font-medium">Status</th>
           <th className="px-4 py-2 font-medium">Actions</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
         {loading ? (
           <tr>
             <td colSpan={11} className="text-center py-6">
@@ -242,7 +241,10 @@ export default function CheckBookingsPage() {
             const canCancel = !isCancelled;
 
             return (
-              <tr key={b.bookingId} className="border-b">
+              <tr
+                key={b.bookingId}
+                className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              >
                 <td className="px-4 py-2">{b.bookingId}</td>
                 <td className="px-4 py-2">{formatDate(b.bookingDate)}</td>
                 <td className="px-4 py-2">
@@ -252,15 +254,14 @@ export default function CheckBookingsPage() {
                 <td className="px-4 py-2">{b.courtType}</td>
                 <td className="px-4 py-2">Rs {b.hourlyPrice}</td>
                 <td className="px-4 py-2">{b.customerName}</td>
-               
                 <td className="px-4 py-2">{paidPill(b.isPaid)}</td>
                 <td className="px-4 py-2">{statusPill(b.status)}</td>
                 <td className="px-4 py-2">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     {b.paymentProofUrl && (
                       <button
                         onClick={() => setProofUrl(b.paymentProofUrl!)}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 border rounded hover:bg-black/5"
+                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
                       >
                         <Eye className="w-4 h-4" />
                         View
@@ -270,10 +271,10 @@ export default function CheckBookingsPage() {
                     <button
                       disabled={!canVerify || verifyingId === b.bookingId}
                       onClick={() => verifyPayment(b.bookingId)}
-                      className={`inline-flex items-center gap-1 px-3 py-1.5 rounded ${
+                      className={`inline-flex items-center gap-1 px-3 py-1.5 rounded transition ${
                         canVerify
                           ? "bg-blue-600 text-white hover:bg-blue-700"
-                          : "bg-black/10 text-black/50 cursor-not-allowed"
+                          : "bg-gray-200 text-gray-400 dark:bg-gray-700 dark:text-gray-500 cursor-not-allowed"
                       }`}
                     >
                       <CheckCircle2 className="w-4 h-4" />
@@ -283,10 +284,10 @@ export default function CheckBookingsPage() {
                     <button
                       disabled={!canCancel || cancelingId === b.bookingId}
                       onClick={() => setConfirmCancelId(b.bookingId)}
-                      className={`inline-flex items-center gap-1 px-3 py-1.5 rounded ${
+                      className={`inline-flex items-center gap-1 px-3 py-1.5 rounded transition ${
                         canCancel
                           ? "bg-red-600 text-white hover:bg-red-700"
-                          : "bg-black/10 text-black/50 cursor-not-allowed"
+                          : "bg-gray-200 text-gray-400 dark:bg-gray-700 dark:text-gray-500 cursor-not-allowed"
                       }`}
                     >
                       <Ban className="w-4 h-4" />
@@ -303,11 +304,11 @@ export default function CheckBookingsPage() {
   </div>
 
   {/* Pagination */}
-  <div className="mt-4 flex items-center justify-between">
+  <div className="mt-4 flex items-center justify-between text-sm">
     <button
       disabled={page === 1}
       onClick={() => setPage((p) => Math.max(1, p - 1))}
-      className="px-3 py-1 bg-black/10 rounded disabled:opacity-50"
+      className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200"
     >
       Prev
     </button>
@@ -317,7 +318,7 @@ export default function CheckBookingsPage() {
     <button
       disabled={page >= totalPages}
       onClick={() => setPage((p) => p + 1)}
-      className="px-3 py-1 bg-black/10 rounded disabled:opacity-50"
+      className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200"
     >
       Next
     </button>
@@ -326,7 +327,7 @@ export default function CheckBookingsPage() {
   {/* Payment Proof Modal */}
   {proofUrl && (
     <div
-      className="fixed inset-0 bg-black/60 backdrop-blur-[1px] flex items-center justify-center z-50"
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50"
       onClick={() => setProofUrl(null)}
     >
       <div
@@ -351,21 +352,21 @@ export default function CheckBookingsPage() {
   {/* Cancel Confirmation Modal */}
   {confirmCancelId !== null && (
     <div
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
       onClick={() => setConfirmCancelId(null)}
     >
       <div
-        className="bg-white rounded-xl shadow-xl w-full max-w-md p-6 relative"
+        className="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-md p-6 relative"
         onClick={(e) => e.stopPropagation()}
       >
         <button
           onClick={() => setConfirmCancelId(null)}
-          className="absolute top-3 right-3 text-black hover:opacity-70"
+          className="absolute top-3 right-3 text-gray-600 dark:text-gray-300 hover:opacity-70"
         >
           <X className="w-5 h-5" />
         </button>
         <h3 className="text-base font-semibold mb-2">Cancel Booking?</h3>
-        <p className="mb-6">
+        <p className="mb-6 text-sm text-gray-600 dark:text-gray-300">
           You are about to cancel booking{" "}
           <span className="font-semibold">#{confirmCancelId}</span>. This action
           cannot be undone.
@@ -373,13 +374,13 @@ export default function CheckBookingsPage() {
         <div className="flex justify-end gap-2">
           <button
             onClick={() => setConfirmCancelId(null)}
-            className="px-4 py-2 rounded bg-black/10 hover:bg-black/20"
+            className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200"
           >
             Keep
           </button>
           <button
             onClick={() => cancelBooking(confirmCancelId)}
-            className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700"
+            className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700 transition"
           >
             {cancelingId === confirmCancelId ? "Cancelling..." : "Confirm Cancel"}
           </button>
@@ -388,6 +389,7 @@ export default function CheckBookingsPage() {
     </div>
   )}
 </div>
+
 
   );
 }

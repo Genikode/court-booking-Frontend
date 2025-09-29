@@ -60,10 +60,10 @@ function Pill({
     "inline-flex items-center justify-center rounded-full px-2.5 sm:px-3 py-1 shrink-0 whitespace-nowrap leading-none border text-[11px] sm:text-xs";
   const styles =
     color === "green"
-      ? "bg-emerald-50 text-emerald-700 border-emerald-100"
+      ? "bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-800"
       : color === "gray"
-      ? "bg-black/5 text-black border-black/10"
-      : "bg-blue-50 text-blue-700 border-blue-100";
+      ? "bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700"
+      : "bg-blue-50 text-blue-700 border-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800";
   return <span className={`${base} ${styles} ${className}`}>{children}</span>;
 }
 
@@ -160,42 +160,42 @@ export default function BookNowPage() {
   };
 
   return (
-    <div className="p-4 sm:p-6 max-w-5xl mx-auto text-[14px] text-black">
+    <div className="p-4 sm:p-6 max-w-5xl mx-auto text-[14px] text-gray-800 dark:text-gray-100 bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors">
       {/* Header & Search */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
         <h1 className="text-2xl font-semibold">Book Now</h1>
         <div className="w-full sm:w-80 relative">
-          <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-black/50" />
+          <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
           <input
             type="text"
             placeholder="Search courts..."
             value={search}
             onChange={(e) => { setPage(1); setSearch(e.target.value); }}
-            className="w-full pl-9 pr-3 py-3 border rounded-2xl text-black"
+            className="w-full pl-9 pr-3 py-3 border rounded-2xl bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100"
           />
         </div>
       </div>
 
       {/* Error tip */}
-      {cError && <div className="mb-3 bg-red-100 text-red-700 px-3 py-2 rounded">{cError}</div>}
+      {cError && <div className="mb-3 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-200 px-3 py-2 rounded">{cError}</div>}
 
       {/* Courts grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {cLoading ? (
           Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="bg-white rounded-2xl border border-black/10 shadow-sm animate-pulse h-40" />
+            <div key={i} className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm animate-pulse h-40" />
           ))
         ) : filteredCourts.length === 0 ? (
-          <div className="col-span-full text-center text-black/60 py-8">No courts available.</div>
+          <div className="col-span-full text-center text-gray-600 dark:text-gray-400 py-8">No courts available.</div>
         ) : (
           filteredCourts.map((c) => (
             <button
               key={c.id}
               onClick={() => openCourtSheet(c)}
-              className="group text-left bg-white rounded-2xl border border-black/10 hover:border-blue-300 shadow-sm hover:shadow-md transition"
+              className="group text-left bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-500 shadow-sm hover:shadow-md transition"
             >
               <div className="grid grid-cols-[88px_1fr] sm:grid-cols-[96px_1fr_auto] gap-3 p-3 items-center">
-                <div className="w-[88px] h-[88px] sm:w-24 sm:h-24 rounded-xl overflow-hidden bg-black/5 border border-black/10">
+                <div className="w-[88px] h-[88px] sm:w-24 sm:h-24 rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600">
                   {c.courtImage ? (
                     <img
                       src={c.courtImage}
@@ -203,7 +203,7 @@ export default function BookNowPage() {
                       className="w-full h-full object-cover transition duration-300 group-hover:scale-[1.02]"
                     />
                   ) : (
-                    <div className="w-full h-full grid place-items-center text-black/40 text-xs">
+                    <div className="w-full h-full grid place-items-center text-gray-400 dark:text-gray-500 text-xs">
                       No image
                     </div>
                   )}
@@ -212,13 +212,13 @@ export default function BookNowPage() {
                   <h3 className="font-semibold text-[15px] sm:text-base truncate">
                     {c.courtName}
                   </h3>
-                  <div className="mt-1 flex items-start gap-1 text-black/70">
+                  <div className="mt-1 flex items-start gap-1 text-gray-600 dark:text-gray-400">
                     <MapPin className="w-4 h-4 mt-[1px] shrink-0" />
                     <span className="text-[13px] leading-snug break-words">
                       {c.locationName}
                     </span>
                   </div>
-                  <div className="mt-1 flex items-center gap-1 text-black/70">
+                  <div className="mt-1 flex items-center gap-1 text-gray-600 dark:text-gray-400">
                     <Clock className="w-4 h-4 shrink-0" />
                     <span className="text-[13px] leading-snug">
                       {formatTime12Hour(c.openTime)} – {formatTime12Hour(c.closeTime)}
@@ -240,7 +240,7 @@ export default function BookNowPage() {
         <button
           disabled={page === 1}
           onClick={() => setPage((p) => Math.max(1, p - 1))}
-          className="px-3 py-1.5 bg-black/10 rounded disabled:opacity-50"
+          className="px-3 py-1.5 bg-gray-200 dark:bg-gray-700 rounded disabled:opacity-50"
         >
           Prev
         </button>
@@ -248,7 +248,7 @@ export default function BookNowPage() {
         <button
           disabled={page >= totalPages}
           onClick={() => setPage((p) => p + 1)}
-          className="px-3 py-1.5 bg-black/10 rounded disabled:opacity-50"
+          className="px-3 py-1.5 bg-gray-200 dark:bg-gray-700 rounded disabled:opacity-50"
         >
           Next
         </button>
@@ -259,29 +259,29 @@ export default function BookNowPage() {
         <div className="fixed inset-0 z-50" onClick={closeSheet}>
           <div className="absolute inset-0 bg-black/50" />
           <div
-            className="absolute inset-x-0 bottom-0 bg-white rounded-t-2xl shadow-xl p-4 max-h-[85vh] overflow-y-auto"
+            className="absolute inset-x-0 bottom-0 bg-white dark:bg-gray-800 rounded-t-2xl shadow-xl p-4 max-h-[85vh] overflow-y-auto transition-colors"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
-                <div className="w-12 h-12 rounded-lg overflow-hidden bg-black/5 border border-black/10">
+                <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600">
                   {activeCourt.courtImage && (
                     <img src={activeCourt.courtImage} alt={activeCourt.courtName} className="w-full h-full object-cover" />
                   )}
                 </div>
                 <div>
                   <h3 className="font-semibold">{activeCourt.courtName}</h3>
-                  <div className="text-xs text-black/70">{activeCourt.locationName}</div>
+                  <div className="text-xs text-gray-600 dark:text-gray-400">{activeCourt.locationName}</div>
                 </div>
               </div>
-              <button onClick={closeSheet} className="p-2 rounded-full hover:bg-black/5">
+              <button onClick={closeSheet} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Court meta */}
-            <div className="flex flex-wrap items-center gap-2 text-black mb-3">
+            <div className="flex flex-wrap items-center gap-2 text-gray-800 dark:text-gray-200 mb-3">
               <Pill color="blue">{activeCourt.courtType}</Pill>
               <Pill color="green">Rs {money(activeCourt.hourlyPrice)}/hr</Pill>
               <Pill color="gray">
@@ -294,13 +294,13 @@ export default function BookNowPage() {
             <div className="mb-3">
               <label className="block text-sm mb-1">Select date</label>
               <div className="relative">
-                <CalendarDays className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-black/50" />
+                <CalendarDays className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
                 <input
                   type="date"
                   value={bookingDate}
                   min={todayISO()}
                   onChange={(e) => setBookingDate(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 border rounded-lg text-black"
+                  className="w-full pl-9 pr-3 py-2 border rounded-lg bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
                 />
               </div>
             </div>
@@ -315,7 +315,7 @@ export default function BookNowPage() {
             />
 
             {bookingMsg && (
-              <div className={`mt-3 px-3 py-2 rounded ${bookingMsg.toLowerCase().includes("confirm") ? "bg-emerald-50 text-emerald-700" : "bg-red-100 text-red-700"}`}>
+              <div className={`mt-3 px-3 py-2 rounded ${bookingMsg.toLowerCase().includes("confirm") ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300" : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-200"}`}>
                 {bookingMsg}
               </div>
             )}
@@ -323,7 +323,7 @@ export default function BookNowPage() {
             {/* Sticky Book bar */}
             <div className="h-16" />
             <div className="fixed left-0 right-0 bottom-0 z-50 p-3">
-              <div className="max-w-5xl mx-auto bg-white/95 backdrop-blur border rounded-xl shadow flex items-center justify-between px-3 py-2">
+              <div className="max-w-5xl mx-auto bg-white dark:bg-gray-800/95 backdrop-blur border border-gray-200 dark:border-gray-700 rounded-xl shadow flex items-center justify-between px-3 py-2">
                 <div className="flex items-center gap-2 text-sm">
                   <BadgeCheck className="w-4 h-4 text-emerald-600" />
                   {selectedSlotId ? <span>Slot selected • {bookingDate}</span> : <span>Select a slot</span>}
@@ -331,7 +331,7 @@ export default function BookNowPage() {
                 <button
                   disabled={!selectedSlotId || bookingLoading}
                   onClick={onBook}
-                  className="px-4 py-2 rounded-lg text-white bg-blue-600 disabled:bg-black/10 disabled:text-black/40"
+                  className="px-4 py-2 rounded-lg text-white bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 dark:disabled:bg-gray-600"
                 >
                   {bookingLoading ? "Booking…" : "Book Slot"}
                 </button>
@@ -359,24 +359,24 @@ function SlotsSection({
   onSelect: (id: number) => void;
 }) {
   return (
-    <div className="mb-2 text-black">
+    <div className="mb-2 text-gray-800 dark:text-gray-200">
       <div className="flex items-center justify-between mb-2">
         <h4 className="font-medium">Available slots</h4>
         {loading && (
-          <span className="inline-flex items-center text-sm text-black/60">
+          <span className="inline-flex items-center text-sm text-gray-500 dark:text-gray-400">
             <Loader2 className="w-4 h-4 mr-1 animate-spin" /> loading…
           </span>
         )}
       </div>
 
       {error && (
-        <div className="mb-2 bg-red-100 text-red-700 px-3 py-2 rounded">
+        <div className="mb-2 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-200 px-3 py-2 rounded">
           {error}
         </div>
       )}
 
       {!loading && slots.length === 0 ? (
-        <div className="text-sm text-black/60">No slots found.</div>
+        <div className="text-sm text-gray-600 dark:text-gray-400">No slots found.</div>
       ) : (
         <div className="flex flex-wrap gap-2">
           {slots.map((s) => {
@@ -390,10 +390,10 @@ function SlotsSection({
                 className={[
                   "px-3 py-2 rounded-lg border text-sm transition",
                   booked
-                    ? "bg-black/5 text-black/40 cursor-not-allowed"
+                    ? "bg-gray-100 text-gray-400 dark:bg-gray-700 dark:text-gray-500 cursor-not-allowed"
                     : selected
                     ? "bg-blue-600 border-blue-600 text-white"
-                    : "bg-white hover:bg-black/5"
+                    : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700"
                 ].join(" ")}
                 title={booked ? "Already booked" : "Select slot"}
               >
