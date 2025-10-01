@@ -1,63 +1,139 @@
 'use client';
-import { useState } from 'react';
-import {
-  FaBars,
-  FaTimes
-} from 'react-icons/fa';
+
+import { useState, useEffect } from 'react';
+import { FaBars, FaTimes, FaMoon, FaSun } from 'react-icons/fa';
 import Link from 'next/link';
+import Image from 'next/image';
+import { useTheme } from 'next-themes';
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [isCoachDropdownOpen, setIsCoachDropdownOpen] = useState(false);
+
+  // Theme toggle (next-themes)
+  const { resolvedTheme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const isDark = resolvedTheme === 'dark';
+
+  const navLinks = [
+    { name: 'Home', href: '/' },
+    { name: 'About', href: '/about' },
+    { name: 'Contact', href: '/contact' },
+  ];
 
   return (
-    <header className="text-sm bg-white z-50 relative">
-      {/* Nav */}
-      <nav className="flex justify-between items-center px-4 md:px-2 py-4">
-        {/* Left side: Logo + Menu */}
+    <header className="fixed w-full top-0 left-0 z-50 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md shadow-sm transition-colors">
+      <nav className="flex justify-between items-center max-w-7xl mx-auto px-6 md:px-10 py-4">
+        {/* Logo */}
         <div className="flex items-center gap-4">
-          <img src="/logo1.png" alt="Creek Sports Club Logo" className="h-20 w-20 ml-4" />
-          <ul className="hidden md:flex gap-14 font-mono font-bold text-[18px] uppercase text-green-700 ml-20 relative">
-            <li><Link href="/">Home</Link></li>
-            <li><Link href="/about">About</Link></li>
-           
-          
-         
-            <li><Link href="/contact">Contact</Link></li>
-          </ul>
+          <Link href="/" className="flex items-center gap-2 group">
+            {/* Light logo */}
+            <Image
+              src="/logo2.png"
+              alt="Creek Sports Club Logo"
+              width={65}
+              height={65}
+              className="rounded block dark:hidden transition-transform group-hover:scale-105"
+            />
+            {/* Dark logo */}
+            <Image
+              src="/logo3.png"
+              alt="Creek Sports Club Logo Dark"
+              width={75}
+              height={75}
+              className="rounded hidden dark:block transition-transform group-hover:scale-105"
+            />
+          </Link>
         </div>
 
-        {/* Right side: Sign In + Mobile Menu */}
-        <div className="flex items-center gap-4">
+        {/* Desktop Nav */}
+        <ul className="hidden md:flex gap-12 font-semibold uppercase text-[15px] tracking-wide">
+          {navLinks.map((link) => (
+            <li key={link.name}>
+              <Link
+                href={link.href}
+                className="relative text-gray-700 dark:text-gray-200 hover:text-green-700 dark:hover:text-green-400 transition-colors duration-200"
+              >
+                {link.name}
+                <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-green-600 dark:bg-green-400 transition-all group-hover:w-full"></span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+
+        {/* Right side */}
+        <div className="flex items-center gap-3">
+          {/* Theme Toggle */}
+          {mounted ? (
+            <button
+              onClick={() => setTheme(isDark ? 'light' : 'dark')}
+              aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
+              className="p-2 rounded-lg border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            >
+              {isDark ? <FaSun size={18} /> : <FaMoon size={18} />}
+            </button>
+          ) : (
+            // layout placeholder to avoid SSR mismatch
+            <span className="inline-block h-9 w-9 rounded-lg" />
+          )}
+
+          {/* Sign In */}
           <Link
             href="/login"
-            className="bg-green text-white px-5 py-2 rounded-full font-semibold bg-green-600 hover:bg-red-800 transition hidden md:block"
+            className="hidden md:block px-5 py-2 rounded-full bg-green-600 text-white font-semibold shadow-md hover:bg-red-700 transition"
           >
             Sign In
           </Link>
 
-          <button onClick={() => setMenuOpen(!menuOpen)} className="md:hidden">
-            {menuOpen ? <FaTimes className="text-blue-400" /> : <FaBars className="text-red-700" />}
+          {/* Mobile Menu Toggle */}
+          <button
+            onClick={() => setMenuOpen((s) => !s)}
+            className="md:hidden p-2 rounded-md text-green-700 dark:text-green-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+            aria-label="Open navigation menu"
+          >
+            {menuOpen ? <FaTimes size={22} /> : <FaBars size={22} />}
           </button>
         </div>
       </nav>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Drawer */}
       {menuOpen && (
-        <div className="md:hidden bg-white px-6 py-4 shadow-lg absolute top-full left-0 w-full z-40">
-          <ul className="flex flex-col gap-4 text-red-700 font-mono font-bold text-[18px] uppercase">
-            <li>
-              <Link 
-                href="/login" 
-                className="bg-green text-white px-4 py-2 bg-green-700 rounded-full font-semibold hover:bg-r00 transition text-center"
+        <div className="md:hidden bg-white dark:bg-gray-900 shadow-md border-t border-gray-200 dark:border-gray-700 transition-colors">
+          <ul className="flex flex-col gap-4 px-6 py-6 font-semibold uppercase text-green-700 dark:text-green-400">
+            {navLinks.map((link) => (
+              <li key={link.name}>
+                <Link
+                  href={link.href}
+                  onClick={() => setMenuOpen(false)}
+                  className="block py-2 hover:text-red-700 dark:hover:text-red-400 transition-colors"
+                >
+                  {link.name}
+                </Link>
+              </li>
+            ))}
+
+            {/* Mobile row: Sign in + Theme toggle */}
+            <li className="flex items-center justify-between pt-2">
+              <Link
+                href="/login"
+                onClick={() => setMenuOpen(false)}
+                className="block text-center px-4 py-2 rounded-full bg-green-600 text-white font-semibold hover:bg-red-700 dark:hover:bg-red-500 transition"
               >
                 Sign In
               </Link>
+
+              {mounted ? (
+                <button
+                  onClick={() => setTheme(isDark ? 'light' : 'dark')}
+                  aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
+                  className="p-2 rounded-lg border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                >
+                  {isDark ? <FaSun size={18} /> : <FaMoon size={18} />}
+                </button>
+              ) : (
+                <span className="inline-block h-9 w-9 rounded-lg" />
+              )}
             </li>
-            <li><Link href="/">Home</Link></li>
-            <li><Link href="/about">About</Link></li>
-           
-            <li><Link href="/contact">Contact</Link></li>
           </ul>
         </div>
       )}

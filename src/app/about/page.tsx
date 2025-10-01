@@ -11,7 +11,7 @@ import Testemonial from "@/sections/Testemonial";
 
 export default function About() {
   return (
-    <div className="bg-white">
+    <div className="bg-white dark:bg-gray-900">
       <Header />
        <PageBanner
         title="About"
@@ -20,8 +20,8 @@ export default function About() {
       />
       <AboutSection />
       <TwoImageBanner />
-      <DiscountSection />
-      <StatsSection />
+      {/* <DiscountSection /> */}
+
   
       <Footer />
     </div>

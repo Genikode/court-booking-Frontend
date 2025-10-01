@@ -41,13 +41,22 @@ export default function LoginScreen() {
       <div className="flex flex-col md:flex-row items-center gap-10 w-full max-w-5xl">
         {/* Logo */}
         <div className="w-full md:w-1/2 flex justify-center">
-          <Image
-            src="/logo1.png"
-            alt="Creek Sports Club Logo"
-            width={280}
-            height={280}
-            className="rounded"
-          />
+       <Image
+        src="/logo2.png"
+        alt="Creek Sports Club Logo"
+        width={280}
+        height={280}
+        className="rounded block dark:hidden"
+      />
+
+      {/* Dark mode logo */}
+      <Image
+        src="/logo3.png"
+        alt="Creek Sports Club Logo Dark"
+        width={280}
+        height={280}
+        className="rounded hidden dark:block"
+      />
         </div>
 
         {/* Login Form */}

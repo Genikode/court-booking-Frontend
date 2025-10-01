@@ -1,76 +1,218 @@
 'use client';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay, Pagination, Navigation, EffectFade } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/pagination';
-import 'swiper/css/navigation';
-import 'swiper/css/effect-fade';
 
-const slides = [
+import { useEffect, useMemo, useRef, useState } from 'react';
+import Link from 'next/link';
+import { ArrowRight, Pause, Play, ChevronLeft, ChevronRight } from 'lucide-react';
+
+type Slide = {
+  eyebrow?: string;
+  title: string;
+  desc: string;
+  ctaText?: string;
+  ctaHref?: string;
+};
+
+const SLIDES: Slide[] = [
   {
-    id: 1,
-    image: '/banner1.jpg',
-    subtitle: 'ALL AGES WELCOME',
-    title: 'Book Your Tennis Court',
-    buttonText: 'VIEW COURTS'
+    eyebrow: 'Creek Sports Club',
+    title: 'Padel & Tennis, Perfected.',
+    desc: 'Premium courts, expert coaching, and a community that pushes you to play better—every session.',
+    ctaText: 'Book a Court',
+    ctaHref: '/login',
   },
   {
-    id: 2,
-    image: '/banner2.jpg',
-    subtitle: 'PLAY WITH ENERGY',
-    title: 'Reserve a Court Today',
-    buttonText: 'BOOK NOW'
+    eyebrow: 'Coaching Programs',
+    title: 'Train Smarter. Win More.',
+    desc: 'Structured programs for beginners to competitors. Build consistency, speed, and technique.',
+    ctaText: 'Explore Coaching',
+    ctaHref: '/login',
   },
   {
-    id: 3,
-    image: '/banner3.jpg',
-    subtitle: 'TRAIN LIKE A PRO',
-    title: 'Tennis Practice Sessions',
-    buttonText: 'JOIN SESSION'
-  }
+    eyebrow: 'Membership',
+    title: 'Play More. Pay Less.',
+    desc: 'Unlock exclusive benefits, priority slots, and member events tailored to your goals.',
+    ctaText: 'View Plans',
+    ctaHref: '/login',
+  },
 ];
 
+export default function TextHeroSlider() {
+  const [index, setIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
-export default function BannerSlider() {
+  // Autoplay (respects reduced motion)
+  const prefersReducedMotion = useMemo(
+    () => typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches,
+    []
+  );
+
+  useEffect(() => {
+    if (paused || prefersReducedMotion) return;
+    const id = setInterval(() => setIndex((i) => (i + 1) % SLIDES.length), 5000);
+    return () => clearInterval(id);
+  }, [paused, prefersReducedMotion]);
+
+  const go = (dir: 'prev' | 'next' | number) => {
+    setIndex((i) => {
+      if (typeof dir === 'number') return dir;
+      if (dir === 'prev') return (i - 1 + SLIDES.length) % SLIDES.length;
+      return (i + 1) % SLIDES.length;
+    });
+  };
+
+  // Keyboard navigation
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowRight') go('next');
+      if (e.key === 'ArrowLeft') go('prev');
+    };
+    el.addEventListener('keydown', onKey);
+    return () => el.removeEventListener('keydown', onKey);
+  }, []);
+
   return (
-    <div className="w-full relative">
-      <Swiper
-        modules={[Autoplay, Pagination, Navigation, EffectFade]}
-        autoplay={{ delay: 4000, disableOnInteraction: false }}
-        pagination={{ clickable: true }}
-        navigation={true}
-        effect="fade"
-        loop={true}
-        slidesPerView={1}
-        className="h-[400px] md:h-[600px]"
-      >
-        {slides.map(slide => (
-          <SwiperSlide key={slide.id}>
-            <div className="relative w-full h-full">
-              <img
-                src={slide.image}
-                alt={slide.title}
-                className="w-full h-full object-cover"
-              />
-
-              {/* Text overlay */}
-              <div className="absolute inset-0 flex items-center justify-center text-center px-4">
-                <div className="text-white md:text-black max-w-3xl">
-                  <p className="text-xs md:text-sm font-semibold tracking-widest text-white mb-1 uppercase">
-                    {slide.subtitle}
+    <section
+      ref={containerRef}
+      tabIndex={0}
+      aria-roledescription="carousel"
+      aria-label="Highlights"
+      className="
+        relative w-full overflow-hidden
+        bg-[radial-gradient(1200px_600px_at_10%_-10%,rgba(59,130,246,0.15),transparent_60%)]
+        dark:bg-[radial-gradient(1200px_600px_at_10%_-10%,rgba(59,130,246,0.12),transparent_60%)]
+        bg-white dark:bg-gray-950
+        border-b border-gray-200/60 dark:border-gray-800
+        pt-28 md:pt-32 pb-16
+      "
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        {/* Track (fade slider) */}
+        <div className="relative h-[360px] md:h-[420px]">
+          {SLIDES.map((s, i) => (
+            <article
+              key={i}
+              role={i === index ? 'group' : undefined}
+              aria-roledescription="slide"
+              aria-label={`${i + 1} of ${SLIDES.length}`}
+              className={`
+                absolute inset-0 flex items-center
+                transition-opacity duration-700 ease-out
+                ${i === index ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}
+              `}
+            >
+              <div className="max-w-3xl">
+                {s.eyebrow && (
+                  <p className="text-xs tracking-[0.2em] uppercase font-semibold text-blue-700 dark:text-blue-400 mb-3">
+                    {s.eyebrow}
                   </p>
-                  <h2 className="text-3xl md:text-6xl font-extrabold leading-tight mb-4 text-white">
-                    {slide.title}
-                  </h2>
-                  <button className="bg-green-600 text-white font-semibold px-6 py-3 rounded-full text-sm hover:bg-green-700 transition-all" onClick={() => {window.location.href = '/login';}}>
-                    {slide.buttonText}
-                  </button>
-                </div>
+                )}
+                <h1 className="text-3xl md:text-5xl font-extrabold leading-tight text-gray-900 dark:text-white">
+                  {s.title}
+                </h1>
+                <p className="mt-4 text-base md:text-lg text-gray-600 dark:text-gray-300">
+                  {s.desc}
+                </p>
+
+                {s.ctaText && s.ctaHref && (
+                  <div className="mt-6 flex flex-wrap gap-3">
+                    <Link
+                      href={s.ctaHref}
+                      className="
+                        inline-flex items-center gap-2
+                        rounded-full px-5 py-2.5 text-sm font-semibold
+                        bg-gradient-to-r from-green-600 to-emerald-600
+                        text-white shadow hover:opacity-90
+                        focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500
+                        dark:focus:ring-offset-gray-950
+                        transition
+                      "
+                    >
+                      {s.ctaText}
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                    <Link
+                      href="/contact"
+                      className="
+                        inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold
+                        border border-gray-300 dark:border-gray-700
+                        text-gray-900 dark:text-gray-100
+                        hover:bg-gray-100 dark:hover:bg-gray-800
+                        focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400
+                        dark:focus:ring-offset-gray-950
+                        transition
+                      "
+                    >
+                      Contact Us
+                    </Link>
+                  </div>
+                )}
               </div>
-            </div>
-          </SwiperSlide>
-        ))}
-      </Swiper>
-    </div>
+            </article>
+          ))}
+        </div>
+
+        {/* Controls */}
+        <div className="mt-8 flex items-center justify-between">
+          {/* Left: Dots */}
+          <div className="flex items-center gap-2" role="tablist" aria-label="Slide tabs">
+            {SLIDES.map((_, i) => {
+              const active = i === index;
+              return (
+                <button
+                  key={i}
+                  role="tab"
+                  aria-selected={active}
+                  aria-controls={`slide-${i}`}
+                  onClick={() => go(i)}
+                  className={`
+                    h-2.5 rounded-full transition-all
+                    ${active ? 'w-8 bg-green-600 dark:bg-green-500' : 'w-2.5 bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600'}
+                  `}
+                  title={`Go to slide ${i + 1}`}
+                />
+              );
+            })}
+          </div>
+
+          {/* Right: Prev/Play/Pause/Next */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => go('prev')}
+              aria-label="Previous slide"
+              className="p-2 rounded-lg border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+            <button
+              onClick={() => setPaused((p) => !p)}
+              aria-label={paused ? 'Play' : 'Pause'}
+              className="p-2 rounded-lg border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+            >
+              {paused ? <Play className="h-5 w-5" /> : <Pause className="h-5 w-5" />}
+            </button>
+            <button
+              onClick={() => go('next')}
+              aria-label="Next slide"
+              className="p-2 rounded-lg border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+            >
+              <ChevronRight className="h-5 w-5" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Decorative gradient glows */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 -bottom-24 mx-auto h-48 max-w-5xl blur-3xl
+                   bg-gradient-to-r from-green-500/20 via-emerald-500/20 to-teal-500/20
+                   dark:from-green-400/15 dark:via-blue-500/15 dark:to-teal-400/15"
+      />
+    </section>
   );
 }
