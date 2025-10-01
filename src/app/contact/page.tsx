@@ -1,6 +1,7 @@
 'use client';
 
 import Header from "@/components/Header";
+import PageBanner from "@/components/PageBanner";
 import Footer from "@/sections/Footer";
 
 const ContactPage = () => {
@@ -8,17 +9,13 @@ const ContactPage = () => {
     <>
       <Header />
       <section className="w-full bg-white dark:bg-gray-900 text-black dark:text-gray-200 transition-colors duration-300">
+         <PageBanner
+              title="Contact"
+              subtitle="Learn More About Us"
+              backgroundImage="/image4.jpeg"
+            />
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
           {/* Header */}
-          <div className="mb-10 text-center">
-            <div className="w-12 h-1 bg-pink-500 mx-auto mb-4"></div>
-            <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white">
-              Contact
-            </h2>
-            <p className="text-sm mt-2 text-gray-600 dark:text-gray-400">
-              Join the Best Dance School in Your Town!
-            </p>
-          </div>
 
           {/* Address & Phone */}
           <div className="text-sm md:text-base font-semibold mb-6 text-center">

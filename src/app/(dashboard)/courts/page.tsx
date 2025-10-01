@@ -72,7 +72,7 @@ export default function BookNowPage() {
   const [courts, setCourts] = useState<Court[]>([]);
   const [cLoading, setCLoading] = useState(false);
   const [cError, setCError] = useState<string | null>(null);
-
+const [acceptedPolicies, setAcceptedPolicies] = useState(false);
   const [page, setPage] = useState(1);
   const [limit] = useState(6);
   const [search, setSearch] = useState("");
@@ -319,6 +319,39 @@ export default function BookNowPage() {
                 {bookingMsg}
               </div>
             )}
+{/* Accept T&C + Privacy */}
+<div className="mt-3">
+  <label className="flex items-start gap-3 text-sm">
+    <input
+      type="checkbox"
+      checked={acceptedPolicies}
+      onChange={(e) => setAcceptedPolicies(e.target.checked)}
+      className="mt-1 h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500"
+      aria-describedby="policies-help"
+    />
+    <span className="text-gray-700 dark:text-gray-300">
+      I have read &amp; accept the{' '}
+      <a
+        href="/terms-condition"
+        target="_blank"
+        className="font-semibold text-blue-700 dark:text-blue-400 hover:underline"
+      >
+        Terms &amp; Conditions
+      </a>{' '}
+      and{' '}
+      <a
+        href="/privacy-policy"
+        target="_blank"
+        className="font-semibold text-blue-700 dark:text-blue-400 hover:underline"
+      >
+        Privacy Policy
+      </a>.
+      <span id="policies-help" className="sr-only">
+        You must accept to proceed with booking.
+      </span>
+    </span>
+  </label>
+</div>
 
             {/* Sticky Book bar */}
             <div className="h-16" />
@@ -328,8 +361,9 @@ export default function BookNowPage() {
                   <BadgeCheck className="w-4 h-4 text-emerald-600" />
                   {selectedSlotId ? <span>Slot selected • {bookingDate}</span> : <span>Select a slot</span>}
                 </div>
+          
                 <button
-                  disabled={!selectedSlotId || bookingLoading}
+                  disabled={!selectedSlotId || bookingLoading || !acceptedPolicies}
                   onClick={onBook}
                   className="px-4 py-2 rounded-lg text-white bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 dark:disabled:bg-gray-600"
                 >

@@ -1,19 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { FaBars, FaTimes, FaMoon, FaSun } from 'react-icons/fa';
+import { useState } from 'react';
+import { FaBars, FaTimes } from 'react-icons/fa';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useTheme } from 'next-themes';
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
-
-  // Theme toggle (next-themes)
-  const { resolvedTheme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-  const isDark = resolvedTheme === 'dark';
 
   const navLinks = [
     { name: 'Home', href: '/' },
@@ -22,27 +15,28 @@ export default function Header() {
   ];
 
   return (
-    <header className="fixed w-full top-0 left-0 z-50 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md shadow-sm transition-colors">
+    <header className="fixed w-full top-0 left-0 z-50 bg-white/90 dark:bg-transparent backdrop-blur-md shadow-sm transition-colors">
       <nav className="flex justify-between items-center max-w-7xl mx-auto px-6 md:px-10 py-4">
         {/* Logo */}
         <div className="flex items-center gap-4">
           <Link href="/" className="flex items-center gap-2 group">
-            {/* Light logo */}
-            <Image
-              src="/logo2.png"
-              alt="Creek Sports Club Logo"
-              width={65}
-              height={65}
-              className="rounded block dark:hidden transition-transform group-hover:scale-105"
-            />
-            {/* Dark logo */}
-            <Image
-              src="/logo3.png"
-              alt="Creek Sports Club Logo Dark"
-              width={75}
-              height={75}
-              className="rounded hidden dark:block transition-transform group-hover:scale-105"
-            />
+         <Image
+                src="/logo2.png"
+                alt="Creek Sports Club Logo"
+                width={65}
+                height={65}
+                className="rounded block dark:hidden"
+              />
+        
+              {/* Dark mode logo */}
+              <Image
+                src="/logo3.png"
+                alt="Creek Sports Club Logo Dark"
+                width={85}
+                height={85}
+                className="rounded hidden dark:block"
+              />
+
           </Link>
         </div>
 
@@ -55,6 +49,7 @@ export default function Header() {
                 className="relative text-gray-700 dark:text-gray-200 hover:text-green-700 dark:hover:text-green-400 transition-colors duration-200"
               >
                 {link.name}
+                {/* Active underline effect */}
                 <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-green-600 dark:bg-green-400 transition-all group-hover:w-full"></span>
               </Link>
             </li>
@@ -62,21 +57,7 @@ export default function Header() {
         </ul>
 
         {/* Right side */}
-        <div className="flex items-center gap-3">
-          {/* Theme Toggle */}
-          {mounted ? (
-            <button
-              onClick={() => setTheme(isDark ? 'light' : 'dark')}
-              aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
-              className="p-2 rounded-lg border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-            >
-              {isDark ? <FaSun size={18} /> : <FaMoon size={18} />}
-            </button>
-          ) : (
-            // layout placeholder to avoid SSR mismatch
-            <span className="inline-block h-9 w-9 rounded-lg" />
-          )}
-
+        <div className="flex items-center gap-4">
           {/* Sign In */}
           <Link
             href="/login"
@@ -87,9 +68,8 @@ export default function Header() {
 
           {/* Mobile Menu Toggle */}
           <button
-            onClick={() => setMenuOpen((s) => !s)}
+            onClick={() => setMenuOpen(!menuOpen)}
             className="md:hidden p-2 rounded-md text-green-700 dark:text-green-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
-            aria-label="Open navigation menu"
           >
             {menuOpen ? <FaTimes size={22} /> : <FaBars size={22} />}
           </button>
@@ -111,28 +91,14 @@ export default function Header() {
                 </Link>
               </li>
             ))}
-
-            {/* Mobile row: Sign in + Theme toggle */}
-            <li className="flex items-center justify-between pt-2">
+            <li>
               <Link
                 href="/login"
                 onClick={() => setMenuOpen(false)}
-                className="block text-center px-4 py-2 rounded-full bg-green-600 text-white font-semibold hover:bg-red-700 dark:hover:bg-red-500 transition"
+                className="block w-full text-center px-4 py-2 rounded-full bg-green-600 text-white font-semibold hover:bg-red-700 dark:hover:bg-red-500 transition"
               >
                 Sign In
               </Link>
-
-              {mounted ? (
-                <button
-                  onClick={() => setTheme(isDark ? 'light' : 'dark')}
-                  aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
-                  className="p-2 rounded-lg border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                >
-                  {isDark ? <FaSun size={18} /> : <FaMoon size={18} />}
-                </button>
-              ) : (
-                <span className="inline-block h-9 w-9 rounded-lg" />
-              )}
             </li>
           </ul>
         </div>

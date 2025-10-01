@@ -188,13 +188,7 @@ export default function TextHeroSlider() {
             >
               <ChevronLeft className="h-5 w-5" />
             </button>
-            <button
-              onClick={() => setPaused((p) => !p)}
-              aria-label={paused ? 'Play' : 'Pause'}
-              className="p-2 rounded-lg border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
-            >
-              {paused ? <Play className="h-5 w-5" /> : <Pause className="h-5 w-5" />}
-            </button>
+         
             <button
               onClick={() => go('next')}
               aria-label="Next slide"
