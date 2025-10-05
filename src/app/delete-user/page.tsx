@@ -5,30 +5,37 @@ import { useState } from "react";
 import { login } from "@/lib/auth";
 import { Eye, EyeOff } from "lucide-react";
 
-export default function LoginScreen() {
+export default function DeleteUser() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [success, setSuccess] = useState<string | null>(null);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleDelete = async (e: React.FormEvent) => {
     e.preventDefault();
     setErr(null);
-
+    setSuccess(null);
     try {
       setLoading(true);
-      const res = await login({ email, password });
-      if (!res.raw) {
-        throw new Error("Login failed");
-      } else {
-        if (res.user?.roleId === 1) {
-          router.push("/dashboard");
-        } else {
-          router.push("/booking");
-        }
+   const res = await fetch('https://creek-sport.ddns.net/users/delete-user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key':"court_secret"
+        },
+        body: JSON.stringify({ email, password }),
+      });
+      if (!res.ok) {
+      setErr('Failed to delete user. Please check your credentials.');
+        return;
       }
+
+      setSuccess('User deleted successfully.');
+      router.push("/login");
+      router.refresh();
     } catch (e: any) {
       setErr(e?.message || "Login failed");
     } finally {
@@ -62,7 +69,7 @@ export default function LoginScreen() {
         {/* Login Form */}
         <div className="w-full md:w-1/2">
           <h2 className="text-3xl font-bold text-gray-800 dark:text-white mb-6">
-            Sign In to Creek Sports Club
+            Delete User to Creek Sports Club
           </h2>
 
           {err && (
@@ -71,7 +78,7 @@ export default function LoginScreen() {
             </div>
           )}
 
-          <form className="space-y-6" onSubmit={handleLogin}>
+          <form className="space-y-6" onSubmit={handleDelete}>
             {/* Email */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -119,19 +126,9 @@ export default function LoginScreen() {
               disabled={loading}
               className="w-full bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 disabled:opacity-60 transition"
             >
-              {loading ? "Signing in..." : "Login"}
+              {loading ? "Deleting..." : "Delete User"}
             </button>
-            <div className="mt-4 text-sm text-gray-600 dark:text-gray-400">
-              Don&apos;t have an account?{" "}
-              <a href="/signup" className="text-blue-600 hover:underline">
-                Sign Up
-              </a>
-            </div>
-            <div className="mt-4 text-sm text-gray-600 dark:text-gray-400">
-              <a href="/delete-user" className="text-blue-600 hover:underline">
-              Delete User
-              </a>
-            </div>
+         
           </form>
         </div>
       </div>
