@@ -98,6 +98,7 @@ const [acceptedPolicies, setAcceptedPolicies] = useState(false);
         `/courts/get-all-courts?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`
       );
       setCourts(res.data?.courts || []);
+      console.log(res.data?.courts, "courts");
       setTotalPages(res.data?.pagination?.totalPages ?? 1);
     } catch (err: any) {
       setCError(err?.message || "Failed to load courts");
@@ -109,7 +110,7 @@ const [acceptedPolicies, setAcceptedPolicies] = useState(false);
   useEffect(() => { fetchCourts(); /* eslint-disable-next-line */ }, [page, search]);
 
   const filteredCourts = useMemo(
-    () => courts.filter((c) => c.isActive === 1 && (c.status?.toLowerCase() ?? "") === "open"),
+    () => courts.filter((c) => c.status === "open"),
     [courts]
   );
 
